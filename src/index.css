@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Jacquard+12&display=swap');
+
+* {
+  font-family: 'IM Fell English', serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --black: #000;
+  --dark: #111;
+  --grey-1: #222;
+  --grey-2: #333;
+  --grey-3: #555;
+  --grey-4: #777;
+  --grey-5: #999;
+  --grey-6: #aaa;
+  --grey-7: #ccc;
+  --grey-8: #eee;
+  --grey-9: #fafafa;
+  --light: #fcfcfc;
+  --white: #fff;
+  --transitioning: all 0.5s ease-in-out;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--white)
+}
+
+.game-container {
+  height: 100vh;
+  background: var(--dark);
+  color: var(--grey-8);
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--grey-3);
+
+}
+
+.logo-font {
+  font-family: 'Jacquard 12', system-ui;
+  font-size: 50px;
+  color: var(--grey-3);
+}
+
+.info-box {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid var(--grey-3);
+  color: var(--grey-3);
+  padding: 0.5rem 1rem;
+  transition: var(--transitioning);
+}
+
+.btn:hover {
+  border-color: var(--grey-4);
+  color: var(--grey-4);
+}
+
+.game-area-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.game-area {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  width: 80vw;
+  padding: 1rem;
+  border: 1px solid var(--grey-3);
+}
