@@ -102,10 +102,10 @@ function carveRivers(elevation, terrain, riverCount = 4) {
 
 export function generateWorld(worldId, portalTargets) {
   let elevation = randomField()
-  elevation = smoothField(elevation, 4)
+  elevation = smoothField(elevation, 2)   
 
   let moisture = randomField()
-  moisture = smoothField(moisture, 3)
+  moisture = smoothField(moisture, 2)    
 
   const terrain = createGrid()
 
@@ -116,13 +116,12 @@ export function generateWorld(worldId, portalTargets) {
 
       let t = PLAINS
 
-      if (h < 0.25) t = 'water'
-      
-      else if (h < 0.3 && m > 0.5) t = 'swamp'
-      else if (h > 0.8) t = 'mountain'
-      else if (h > 0.65) t = 'rock'
+      if (h < 0.22) t = 'water'
+      else if (h < 0.28 && m > 0.5) t = 'swamp'
+      else if (h > 0.58) t = 'mountain'
+      else if (h > 0.60) t = 'rock'
+      else if (h > 0.55) t = 'hill'
       else if (m > 0.6) t = 'forest'
-      else t = PLAINS
 
       terrain[y][x] = t
     }
@@ -138,7 +137,7 @@ export function generateWorld(worldId, portalTargets) {
     } while (terrain[y][x] === 'water')
 
     terrain[y][x] = 'portal'
-    
+
     return {
       id: idx,
       x,
@@ -154,3 +153,4 @@ export function generateWorld(worldId, portalTargets) {
     portals,
   }
 }
+

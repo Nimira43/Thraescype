@@ -31,8 +31,7 @@ function terrainLabel(t) {
 export default function Game() {
   const gridRef = useRef(null)
   const [game, setGame] = useState(() => createNewGame())
-
-
+  
   useEffect(() => {
     if (!game) return
 
@@ -81,7 +80,7 @@ export default function Game() {
   useEffect(() => {
     if (!gridRef.current || !game) return
 
-    const cellSize = 18
+    const cellSize = 16
     const scrollX = game.player.x * cellSize - gridRef.current.clientWidth / 2
     const scrollY = game.player.y * cellSize - gridRef.current.clientHeight / 2
 
@@ -100,7 +99,7 @@ export default function Game() {
   const height = world.grid.length
 
   const playerTerrain = world.grid[player.y][player.x]
-
+ 
   return (
     <div className='game-root'>
       <div className='world-area'>
@@ -108,8 +107,8 @@ export default function Game() {
           ref={gridRef}
           className='grid-wrapper'
           style={{
-            gridTemplateColumns: `repeat(${width}, 18px)`,
-            gridTemplateRows: `repeat(${height}, 18px)`
+            gridTemplateColumns: `repeat(${width}, 16px)`,
+            gridTemplateRows: `repeat(${height}, 16px)`
           }}
         >
           {world.grid.map((row, y) =>
@@ -152,6 +151,3 @@ export default function Game() {
     </div>
   )
 }
-
-
-
