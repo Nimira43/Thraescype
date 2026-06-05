@@ -100,12 +100,39 @@ function carveRivers(elevation, terrain, riverCount = 4) {
   }
 }
 
+// ENTITY HELPERS — NPCs + ITEMS
+
+function ensureCellObject(world, x, y) {
+  const cell = world.grid[y][x]
+  if (typeof cell === 'string') {
+    world.grid[y][x] = { type: cell, entity: null }
+  }
+}
+
+function placeNPC(world, npcId, x, y) {
+  ensureCellObject(world, x, y)
+  world.grid[y][x].entity = {
+    kind: 'npc',
+    id: npcId
+  }
+}
+
+function placeItem(world, itemId, x, y) {
+  ensureCellObject(world, x, y)
+  world.grid[y][x].entity = {
+    kind: 'item',
+    id: itemId
+  }
+}
+
+// WORLD GENERATION
+
 export function generateWorld(worldId, portalTargets) {
   let elevation = randomField()
-  elevation = smoothField(elevation, 2)   
+  elevation = smoothField(elevation, 2)
 
   let moisture = randomField()
-  moisture = smoothField(moisture, 2)    
+  moisture = smoothField(moisture, 2)
 
   const terrain = createGrid()
 
@@ -129,14 +156,24 @@ export function generateWorld(worldId, portalTargets) {
 
   carveRivers(elevation, terrain, 4)
 
-  const portals = portalTargets.map((targetId, idx) => {
+  const world = {
+    id: worldId,
+    name: `World ${worldId + 1}`,
+    grid: terrain,
+    portals: []
+  }
+
+  // PORTALS
+  
+  world.portals = portalTargets.map((targetId, idx) => {
     let x, y
     do {
       x = Math.floor(Math.random() * WIDTH)
       y = Math.floor(Math.random() * HEIGHT)
     } while (terrain[y][x] === 'water')
 
-    terrain[y][x] = 'portal'
+    ensureCellObject(world, x, y)
+    world.grid[y][x].type = 'portal'
 
     return {
       id: idx,
@@ -146,11 +183,13 @@ export function generateWorld(worldId, portalTargets) {
     }
   })
 
-  return {
-    id: worldId,
-    name: `World ${worldId + 1}`,
-    grid: terrain,
-    portals,
+  // PLACE NPCs + ITEMS (example for World 1)
+  
+  if (worldId === 0) {
+    placeNPC(world, 'old_man_1', 10, 10)
+    placeItem(world, 'lost_relic', 15, 12)
   }
+
+  return world
 }
 

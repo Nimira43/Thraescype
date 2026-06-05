@@ -7,17 +7,34 @@
 }
 
 :root {
-  --black: #000;
+  
+  --light: #fafafa;
   --dark: #111;
-  --grey-2: #333;
-  --grey-3: #555;
-  --grey-4: #777;
-  --grey-7: #ccc;
+  --grey-1: #333;
+  --grey-2: #555;
+  --grey-3: #777;
+  --grey-4: #999;
+  --grey-5: #aaa;
+  --grey-6: #ccc;
+  --grey-7: #eee;
+  --black: #000;
+  --white: #fff;
+  --plains: #000;
+  --grass: #1a1a1a;
+  --marsh: #222;
+  --swamp: #2e2e2e;
+  --forest: #3a3a3a;
+  --rough: #4a4a4a;
+  --rock: #5a5a5a;
+  --hill: #6a6a6a;
+  --mountain: #7a7a7a;
+  --water: #8a8a8a;
+  --deepwater: #555;
 }
 
 body {
   background: var(--black);
-  color: #fff;
+  color: var(--light);
   font-family: 'IM Fell English', serif;
   height: 100vh;
   overflow: hidden;
@@ -28,7 +45,7 @@ body {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background: #000;
+  background: var(--black);
 }
 
 .world-area {
@@ -42,8 +59,8 @@ body {
 
 .grid-wrapper {
   display: grid;
-  background: #000;
-  border: 2px solid #333;
+  background: var(--black);
+  border: 2px solid var(--grey-1);
   overflow: auto;
   scrollbar-width: none;
 }
@@ -54,10 +71,10 @@ body {
 
 .side-panel {
   width: 320px;
-  background: #111;
-  border-left: 2px solid #333;
+  background: var(--dark);
+  border-left: 2px solid var(--grey-1);
   padding: 20px;
-  color: #ccc;
+  color: var(--grey-6);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -66,7 +83,7 @@ body {
 .side-title {
   font-family: 'Jacquard 12', system-ui;
   font-size: 42px;
-  color: #777;
+  color: var(--grey-3);
 }
 
 .info-block {
@@ -82,67 +99,105 @@ body {
 /* BASE TERRAIN — darkest to lightest */
 
 .t-plains {
-  background: #000;
-  /* pure black — empty world */
+  background: var(--plains);  /* pure black — empty world */
 }
 
 .t-grass {
-  background: #1a1a1a;
-  /* barely lighter — subtle texture */
+  background: var(--grass);  /* barely lighter — subtle texture */
 }
 
 .t-marsh {
-  background: #222;
-  /* wet, darker than swamp */
+  background: var(--marsh);  /* wet, darker than swamp */
 }
 
 .t-swamp {
-  background: #2e2e2e;
-  /* murky mid-dark */
+  background: var(--swamp);  /* murky mid-dark */
 }
 
 .t-forest {
-  background: #3a3a3a;
-  /* dense, slightly lighter */
+  background: var(--forest); /* dense, slightly lighter */
 }
 
 .t-rough {
-  background: #4a4a4a;
-  /* broken ground */
+  background: var(--rough); /* broken ground */
 }
 
 .t-rock {
-  background: #5a5a5a;
-  /* stone fields */
+  background: var(--rock); /* stone fields */
 }
 
 .t-hill {
-  background: #6a6a6a;
-  /* gentle elevation */
+  background: var(--hill); /* gentle elevation */
 }
 
 .t-mountain {
-  background: #7a7a7a;
-  /* high elevation */
+  background: var(--mountain); /* high elevation */
 }
 
 .t-water {
-  background: #8a8a8a;
-  /* reflective surface */
+  background: var(--water); /* reflective surface */
 }
 
 .t-deepwater {
-  background: #555;
-  /* deeper, darker water */
+  background: var(--deepwater); /* deeper, darker water */
 }
 
 .t-portal {
-  background: #000;
-  border: 2px solid #fff;
+  background: var(--dark);
+  border: 2px solid var(--light);
   border-radius: 50%;
 }
 
 .t-player {
-  background: #fff;
+  background: var(--light);
   border-radius: 50%;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-box {
+  background: var(--black);
+  border: 2px solid var(--light);
+  padding: 20px;
+  width: 420px;
+  font-family: 'IM Fell English', serif;
+  color: var(--light);
+  text-shadow: 0 0 4px var(--light);
+  box-shadow: 0 0 12px var(--light);
+}
+
+.modal-text {
+  font-size: 22px;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.modal-btn {
+  background: var(--black);
+  color: var(--light);
+  border: 2px solid var(--light);
+  padding: 8px 16px;
+  font-size: 20px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  text-shadow: 0 0 4px var(--light);
+}
+
+.modal-btn:hover {
+  background: var(--dark);
+}
+
+.modal-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

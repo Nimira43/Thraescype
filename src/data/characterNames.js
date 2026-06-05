@@ -1,4 +1,4 @@
-export const angloSaxonSurnames = [
+export const surnames = [
   'Aelfing',
   'Aetheling',
   'Beornwulfson',
@@ -50,7 +50,7 @@ export const angloSaxonSurnames = [
   'Beornham'
 ]
 
-export const angloSaxonFemaleNames = [
+export const femaleNames = [
   'Aelfgifu',
   'Aelfwynn',
   'Aethelburg',
@@ -83,7 +83,7 @@ export const angloSaxonFemaleNames = [
   'Wynflaed'
 ]
 
-export const angloSaxonMaleNames = [
+export const maleNames = [
   'Aelfric',
   'Aethelred',
   'Aethelstan',

@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import { generateNetwork, WORLD_COUNT } from './worldNetwork'
+import InteractionModal from './InteractionModal'
+import { NPCS } from './data/npcData'
+import { ITEMS } from './data/items'
 
 function createNewGame() {
   const worlds = generateNetwork()
   return {
     worlds,
     currentWorldId: 0,
-    player: { x: 5, y: 5 },
+    player: { 
+      x: 5, 
+      y: 5,
+      inventory: []
+    }
   }
 }
 
@@ -31,11 +38,65 @@ function terrainLabel(t) {
 export default function Game() {
   const gridRef = useRef(null)
   const [game, setGame] = useState(() => createNewGame())
-  
+
+  // NEW: interaction modal state
+  const [interaction, setInteraction] = useState(null)
+
+  // ITEM PICKUP
+  function pickUpItem(itemId) {
+    const updated = {
+      ...game,
+      player: {
+        ...game.player,
+        inventory: [...game.player.inventory, itemId]
+      }
+    }
+    setGame(updated)
+    setInteraction(null)
+  }
+
+  // ENTITY INTERACTION HANDLER
+  function handleInteraction(entity) {
+    if (!entity) return
+
+    // NPC
+    if (entity.kind === 'npc') {
+      const npc = NPCS[entity.id]
+      if (!npc) return
+
+      setInteraction({
+        type: 'dialogue',
+        text: npc.dialogue[0],
+        npcId: entity.id
+      })
+      return
+    }
+
+    // ITEM
+    if (entity.kind === 'item') {
+      const item = ITEMS[entity.id]
+      if (!item) return
+
+      setInteraction({
+        type: 'choices',
+        text: `You found ${item.name}.`,
+        choices: [
+          { label: 'Pick up', action: () => pickUpItem(entity.id) },
+          { label: 'Leave', action: () => setInteraction(null) }
+        ]
+      })
+      return
+    }
+  }
+
+  // MOVEMENT + PORTALS + INTERACTION
   useEffect(() => {
     if (!game) return
 
     function handleKey(e) {
+      // If modal is open → block movement
+      if (interaction) return
+
       const { player, worlds, currentWorldId } = game
       const world = worlds[currentWorldId]
 
@@ -53,30 +114,43 @@ export default function Game() {
 
       if (!world.grid[newY] || !world.grid[newY][newX]) return
 
-      if (world.grid[newY][newX] === 'portal') {
-        const portal = world.portals
-          .find(p => p.x === newX && p.y === newY)
-        
+      const cell = world.grid[newY][newX]
+
+      // PORTAL
+      if (cell === 'portal' || cell?.type === 'portal') {
+        const portal = world.portals.find(p => p.x === newX && p.y === newY)
         if (portal) {
           setGame({
             ...game,
             currentWorldId: portal.targetWorldId,
-            player: { x: 5, y: 5 },
+            player: { x: 5, y: 5, inventory: [...player.inventory] }
           })
           return
         }
       }
 
+      // ENTITY INTERACTION
+      if (cell?.entity) {
+        handleInteraction(cell.entity)
+        return
+      }
+
+      // NORMAL MOVEMENT
       setGame({
         ...game,
-        player: { x: newX, y: newY },
+        player: { 
+          ...player,
+          x: newX,
+          y: newY
+        }
       })
     }
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [game])
+  }, [game, interaction])
 
+  // CAMERA FOLLOW
   useEffect(() => {
     if (!gridRef.current || !game) return
 
@@ -97,9 +171,8 @@ export default function Game() {
   const world = worlds[currentWorldId]
   const width = world.grid[0].length
   const height = world.grid.length
-
   const playerTerrain = world.grid[player.y][player.x]
- 
+
   return (
     <div className='game-root'>
       <div className='world-area'>
@@ -113,10 +186,10 @@ export default function Game() {
         >
           {world.grid.map((row, y) =>
             row.map((cell, x) => {
-              let cls = 'cell t-' + cell
-              
+              let cls = 'cell t-' + (cell.type || cell)
+
               if (player.x === x && player.y === y) cls = 'cell t-player'
-              
+
               return (
                 <div
                   key={`${x}-${y}`}
@@ -138,7 +211,7 @@ export default function Game() {
             <strong>World:</strong> {currentWorldId + 1} / {WORLD_COUNT}
           </div>
           <div>
-            <strong>Terrain:</strong> {terrainLabel(playerTerrain)}
+            <strong>Terrain:</strong> {terrainLabel(playerTerrain.type || playerTerrain)}
           </div>
           <div>
             <strong>Player:</strong> ({player.x}, {player.y})
@@ -148,6 +221,13 @@ export default function Game() {
           </div>
         </div>
       </div>
+
+      <InteractionModal 
+        data={interaction}
+        onClose={
+          () => setInteraction(null)
+        }
+      />
     </div>
   )
 }

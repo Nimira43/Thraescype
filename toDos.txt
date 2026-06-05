@@ -1,0 +1,7 @@
+Next:
+Migrate all tiles to { type, entity } consistently
+
+→ The first NPC + first quest fully implemented
+→ Typewriter or CRT‑flicker text animation
+→ A proper inventory UI
+→ Quest log UI
