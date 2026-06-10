@@ -1,3 +1,5 @@
+import { createNPC, createItem } from './data/entityFactory'
+
 const WIDTH = 60
 const HEIGHT = 40
 
@@ -109,20 +111,14 @@ function ensureCellObject(world, x, y) {
   }
 }
 
-function placeNPC(world, npcId, x, y) {
+export function placeNPC(world, npcId, x, y) {
   ensureCellObject(world, x, y)
-  world.grid[y][x].entity = {
-    kind: 'npc',
-    id: npcId
-  }
+  world.grid[y][x].entity = createNPC(npcId)
 }
 
-function placeItem(world, itemId, x, y) {
+export function placeItem(world, itemId, x, y) {
   ensureCellObject(world, x, y)
-  world.grid[y][x].entity = {
-    kind: 'item',
-    id: itemId
-  }
+  world.grid[y][x].entity = createItem(itemId)
 }
 
 // WORLD GENERATION
