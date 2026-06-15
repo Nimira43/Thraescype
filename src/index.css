@@ -201,3 +201,26 @@ body {
   flex-direction: column;
   gap: 10px;
 }
+
+.npc-box,
+.item-box {
+  border: 2px solid var(--white);
+  padding: 12px;
+  margin-bottom: 12px;
+  background: var(--black);
+  color: var(--white);
+  font-family: 'IM Fell English', serif;
+}
+
+.npc-name,
+.item-name {
+  font-size: 20px;
+  margin-bottom: 6px;
+  text-shadow: 0 0 4px var(--white);
+}
+
+.npc-dialogue-preview,
+.item-description {
+  font-size: 16px;
+  opacity: 0.8;
+}
