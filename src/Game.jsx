@@ -38,11 +38,8 @@ function terrainLabel(t) {
 export default function Game() {
   const gridRef = useRef(null)
   const [game, setGame] = useState(() => createNewGame())
-
-  // NEW: interaction modal state
   const [interaction, setInteraction] = useState(null)
 
-  // ITEM PICKUP
   function pickUpItem(itemId) {
     const updated = {
       ...game,
@@ -55,11 +52,9 @@ export default function Game() {
     setInteraction(null)
   }
 
-  // ENTITY INTERACTION HANDLER
   function handleInteraction(entity) {
     if (!entity) return
 
-    // NPC
     if (entity.kind === 'npc') {
       const npc = NPCS[entity.id]
       if (!npc) return
@@ -72,7 +67,6 @@ export default function Game() {
       return
     }
 
-    // ITEM
     if (entity.kind === 'item') {
       const item = ITEMS[entity.id]
       if (!item) return
@@ -89,12 +83,10 @@ export default function Game() {
     }
   }
 
-  // MOVEMENT + PORTALS + INTERACTION
   useEffect(() => {
     if (!game) return
 
     function handleKey(e) {
-      // If modal is open → block movement
       if (interaction) return
 
       const { player, worlds, currentWorldId } = game
@@ -116,7 +108,6 @@ export default function Game() {
 
       const cell = world.grid[newY][newX]
 
-      // PORTAL
       if (cell === 'portal' || cell?.type === 'portal') {
         const portal = world.portals.find(p => p.x === newX && p.y === newY)
         if (portal) {
@@ -129,13 +120,11 @@ export default function Game() {
         }
       }
 
-      // ENTITY INTERACTION
       if (cell?.entity) {
         handleInteraction(cell.entity)
         return
       }
 
-      // NORMAL MOVEMENT
       setGame({
         ...game,
         player: { 
@@ -150,7 +139,6 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [game, interaction])
 
-  // CAMERA FOLLOW
   useEffect(() => {
     if (!gridRef.current || !game) return
 
@@ -186,8 +174,15 @@ export default function Game() {
         >
           {world.grid.map((row, y) =>
             row.map((cell, x) => {
-              let cls = 'cell t-' + (cell.type || cell)
+              // Normalise tile type
+              const cellType = typeof cell === 'string' ? cell : cell.type
+              let cls = 'cell t-' + cellType
 
+              // Entity overrides
+              if (cell.entity?.kind === 'npc') cls = 'cell t-npc'
+              if (cell.entity?.kind === 'item') cls = 'cell t-item'
+
+              // Player overrides - always last
               if (player.x === x && player.y === y) cls = 'cell t-player'
 
               return (
@@ -198,6 +193,7 @@ export default function Game() {
               )
             })
           )}
+
         </div>
       </div>
 

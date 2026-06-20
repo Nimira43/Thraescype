@@ -2,7 +2,6 @@ import { createNPC, createItem } from './data/entityFactory'
 
 const WIDTH = 60
 const HEIGHT = 40
-
 const PLAINS = 'plains'
 
 function createGrid(fn) {
@@ -102,8 +101,6 @@ function carveRivers(elevation, terrain, riverCount = 4) {
   }
 }
 
-// ENTITY HELPERS — NPCs + ITEMS
-
 function ensureCellObject(world, x, y) {
   const cell = world.grid[y][x]
   if (typeof cell === 'string') {
@@ -120,8 +117,6 @@ export function placeItem(world, itemId, x, y) {
   ensureCellObject(world, x, y)
   world.grid[y][x].entity = createItem(itemId)
 }
-
-// WORLD GENERATION
 
 export function generateWorld(worldId, portalTargets) {
   let elevation = randomField()
@@ -159,8 +154,6 @@ export function generateWorld(worldId, portalTargets) {
     portals: []
   }
 
-  // PORTALS
-  
   world.portals = portalTargets.map((targetId, idx) => {
     let x, y
     do {
@@ -179,8 +172,6 @@ export function generateWorld(worldId, portalTargets) {
     }
   })
 
-  // PLACE NPCs + ITEMS (example for World 1)
-  
   if (worldId === 0) {
     placeNPC(world, 'old_man_1', 10, 10)
     placeItem(world, 'lost_relic', 15, 12)

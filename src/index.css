@@ -224,3 +224,13 @@ body {
   font-size: 16px;
   opacity: 0.8;
 }
+
+.t-npc {
+  background: var(--white);
+  border-radius: 50%;
+}
+
+.t-item {
+  background: var(--grey-5);
+  border-radius: 4px;
+}
