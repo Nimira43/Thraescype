@@ -1,36 +1,60 @@
+import Item from './components/Item'
+
 export default function InteractionModal({ data, onClose }) {
   if (!data) return null
 
-  return (
-    <div className='modal-overlay'>
-      <div className='modal-box'>
-        <div className='modal-text'>
-          {data.text}
-        </div>
+  if (data.type === 'dialogue') {
+    const { state } = data
+    const { node } = state
 
-        {data.type === 'dialogue' && (
-          <button
-            className='modal-btn'
-            onClick={onClose}
-          >
-            Continue
-          </button>
-        )}
-
-        {data.type === 'choices' && (
+    return (
+      <div className='modal-overlay'>
+        <div className='modal-box'>
+          <p className='modal-text'>{node.text}</p>
           <div className='modal-choices'>
-            {data.choices.map((c, i) => (
+            {node.choices.map((choice, idx) => (
               <button
-                key={i}
+                key={idx}
                 className='modal-btn'
-                onClick={c.action}
+                onClick={() => data.onChoice(idx)}
               >
-                {c.label}
+                {choice.text}
+              </button>
+            ))}
+            {node.choices.length === 0 && (
+              <button
+                className='modal-btn'
+                onClick={onClose}
+              >
+                Close
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (data.type === 'item') {
+    return (
+      <div className='modal-overlay'>
+        <div className='modal-box'>
+          <Item item={data.item} />
+          <div className='modal-choices'>
+            {data.choices.map((choice, idx) => (
+              <button
+                key={idx}
+                className='modal-btn'
+                onClick={choice.action}
+              >
+                {choice.label}
               </button>
             ))}
           </div>
-        )}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return null
 }

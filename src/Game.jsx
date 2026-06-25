@@ -1,8 +1,10 @@
+
 import { useEffect, useRef, useState } from 'react'
 import { generateNetwork, WORLD_COUNT } from './worldNetwork'
 import InteractionModal from './InteractionModal'
 import { NPCS } from './data/npcData'
 import { ITEMS } from './data/items'
+import { startDialogue, advanceDialogue } from './data/dialogEngine'
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -40,42 +42,74 @@ export default function Game() {
   const [game, setGame] = useState(() => createNewGame())
   const [interaction, setInteraction] = useState(null)
 
-  function pickUpItem(itemId) {
-    const updated = {
+  function pickUpItem(itemId, x, y) {
+    // Remove the entity from the grid so it can't be picked up again
+    const world = game.worlds[game.currentWorldId]
+    const cell = world.grid[y][x]
+    if (cell && typeof cell === 'object') {
+      cell.entity = null
+    }
+
+    setGame({
       ...game,
       player: {
         ...game.player,
         inventory: [...game.player.inventory, itemId]
       }
-    }
-    setGame(updated)
+    })
     setInteraction(null)
   }
 
-  function handleInteraction(entity) {
+  // Dialogue + Item Interaction
+  function handleInteraction(entity, x, y) {
     if (!entity) return
 
+    // NPC → Dialogue Tree
     if (entity.kind === 'npc') {
       const npc = NPCS[entity.id]
-      if (!npc) return
+      if (!npc || !npc.dialogueTreeId) return
 
-      setInteraction({
-        type: 'dialogue',
-        text: npc.dialogue[0],
-        npcId: entity.id
-      })
+      // Recursive closure so each step advances from the CURRENT node,
+      // instead of bouncing through the component's `interaction` state
+      // (which is stale by the time the next click fires).
+      const showDialogue = (state) => {
+        setInteraction({
+          type: 'dialogue',
+          state,
+          onChoice: (choiceIndex) => {
+            const next = advanceDialogue(state, choiceIndex)
+
+            // Handle effects later (quests, flags, etc.)
+            if (next.effect) {
+              console.log("Dialogue effect:", next.effect)
+            }
+
+            // End node → close modal
+            if (next.node.choices.length === 0) {
+              setInteraction(null)
+              return
+            }
+
+            // Continue dialogue
+            showDialogue(next)
+          }
+        })
+      }
+
+      showDialogue(startDialogue(npc.dialogueTreeId))
       return
     }
 
+    // ITEM → Pickup modal
     if (entity.kind === 'item') {
       const item = ITEMS[entity.id]
       if (!item) return
 
       setInteraction({
-        type: 'choices',
-        text: `You found ${item.name}.`,
+        type: 'item',
+        item,
         choices: [
-          { label: 'Pick up', action: () => pickUpItem(entity.id) },
+          { label: 'Pick up', action: () => pickUpItem(entity.id, x, y) },
           { label: 'Leave', action: () => setInteraction(null) }
         ]
       })
@@ -83,6 +117,7 @@ export default function Game() {
     }
   }
 
+  // MOVEMENT + PORTALS + ENTITY INTERACTION
   useEffect(() => {
     if (!game) return
 
@@ -108,6 +143,7 @@ export default function Game() {
 
       const cell = world.grid[newY][newX]
 
+      // PORTAL
       if (cell === 'portal' || cell?.type === 'portal') {
         const portal = world.portals.find(p => p.x === newX && p.y === newY)
         if (portal) {
@@ -120,11 +156,13 @@ export default function Game() {
         }
       }
 
+      // ENTITY INTERACTION
       if (cell?.entity) {
-        handleInteraction(cell.entity)
+        handleInteraction(cell.entity, newX, newY)
         return
       }
 
+      // MOVE
       setGame({
         ...game,
         player: { 
@@ -139,6 +177,7 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [game, interaction])
 
+  // CAMERA FOLLOW
   useEffect(() => {
     if (!gridRef.current || !game) return
 
@@ -174,15 +213,12 @@ export default function Game() {
         >
           {world.grid.map((row, y) =>
             row.map((cell, x) => {
-              // Normalise tile type
               const cellType = typeof cell === 'string' ? cell : cell.type
               let cls = 'cell t-' + cellType
 
-              // Entity overrides
               if (cell.entity?.kind === 'npc') cls = 'cell t-npc'
               if (cell.entity?.kind === 'item') cls = 'cell t-item'
 
-              // Player overrides - always last
               if (player.x === x && player.y === y) cls = 'cell t-player'
 
               return (
@@ -193,14 +229,11 @@ export default function Game() {
               )
             })
           )}
-
         </div>
       </div>
 
       <div className='side-panel'>
-        <div className='side-title'>
-          Þræscype
-        </div>
+        <div className='side-title'>Þræscype</div>
 
         <div className='info-block'>
           <div>
@@ -220,9 +253,7 @@ export default function Game() {
 
       <InteractionModal 
         data={interaction}
-        onClose={
-          () => setInteraction(null)
-        }
+        onClose={() => setInteraction(null)}
       />
     </div>
   )
