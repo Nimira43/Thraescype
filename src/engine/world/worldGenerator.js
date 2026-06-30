@@ -1,4 +1,4 @@
-import { createNPC, createItem } from './data/entityFactory'
+import { createNPC, createItem } from '../../data/factories/entityFactory'
 
 const WIDTH = 60
 const HEIGHT = 40
@@ -136,8 +136,8 @@ export function generateWorld(worldId, portalTargets) {
 
       if (h < 0.22) t = 'water'
       else if (h < 0.28 && m > 0.5) t = 'swamp'
-      else if (h > 0.58) t = 'mountain'
       else if (h > 0.60) t = 'rock'
+      else if (h > 0.58) t = 'mountain'
       else if (h > 0.55) t = 'hill'
       else if (m > 0.6) t = 'forest'
 
@@ -147,10 +147,14 @@ export function generateWorld(worldId, portalTargets) {
 
   carveRivers(elevation, terrain, 4)
 
+  const grid = terrain.map(row =>
+    row.map(t => ({ type: t, entity: null }))
+  )
+
   const world = {
     id: worldId,
     name: `World ${worldId + 1}`,
-    grid: terrain,
+    grid,
     portals: []
   }
 
@@ -179,4 +183,5 @@ export function generateWorld(worldId, portalTargets) {
 
   return world
 }
+
 

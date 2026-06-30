@@ -1,4 +1,4 @@
-import { generateWorld } from './worldGenerator'
+import { generateWorld} from './worldGenerator'
 
 export const WORLD_COUNT = 20
 export const PORTALS_PER_WORLD = 3

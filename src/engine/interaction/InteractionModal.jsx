@@ -1,4 +1,4 @@
-import Item from './components/Item'
+import Item from '../../components/Item'
 
 export default function InteractionModal({ data, onClose }) {
   if (!data) return null

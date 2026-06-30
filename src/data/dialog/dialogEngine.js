@@ -1,4 +1,4 @@
-import { DIALOGUE_TREES } from './dialogTrees' 
+import { DIALOGUE_TREES } from './dialogTrees'
 
 export function startDialogue(treeId) {
   const tree = DIALOGUE_TREES[treeId]

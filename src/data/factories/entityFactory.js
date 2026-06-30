@@ -1,5 +1,5 @@
-import { NPCS } from './npcData'
-import { ITEMS } from './items'
+import { NPCS } from '../entities/npcData'
+import { ITEMS } from '../entities/items'
 
 export function createNPC(id) {
   const def = NPCS[id]

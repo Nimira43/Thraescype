@@ -1,10 +1,9 @@
-
 import { useEffect, useRef, useState } from 'react'
-import { generateNetwork, WORLD_COUNT } from './worldNetwork'
-import InteractionModal from './InteractionModal'
-import { NPCS } from './data/npcData'
-import { ITEMS } from './data/items'
-import { startDialogue, advanceDialogue } from './data/dialogEngine'
+import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
+import InteractionModal from './interaction/InteractionModal'
+import { NPCS } from '../data/entities/npcData'
+import { ITEMS } from '../data/entities/items'
+import { startDialogue, advanceDialogue } from '../data/dialog/dialogEngine'
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -43,20 +42,33 @@ export default function Game() {
   const [interaction, setInteraction] = useState(null)
 
   function pickUpItem(itemId, x, y) {
-    // Remove the entity from the grid so it can't be picked up again
-    const world = game.worlds[game.currentWorldId]
-    const cell = world.grid[y][x]
-    if (cell && typeof cell === 'object') {
-      cell.entity = null
-    }
+    setGame(prev => {
+      const worlds = [...prev.worlds]
+      const worldIndex = prev.currentWorldId
+      const world = { ...worlds[worldIndex] }
 
-    setGame({
-      ...game,
-      player: {
-        ...game.player,
-        inventory: [...game.player.inventory, itemId]
+      const newGrid = world.grid.map(row =>
+        row.map(cell => ({ ...cell }))
+      )
+
+      newGrid[y][x] = {
+        ...newGrid[y][x],
+        entity: null
+      }
+
+      world.grid = newGrid
+      worlds[worldIndex] = world
+
+      return {
+        ...prev,
+        worlds,
+        player: {
+          ...prev.player,
+          inventory: [...prev.player.inventory, itemId]
+        }
       }
     })
+
     setInteraction(null)
   }
 
@@ -69,9 +81,6 @@ export default function Game() {
       const npc = NPCS[entity.id]
       if (!npc || !npc.dialogueTreeId) return
 
-      // Recursive closure so each step advances from the CURRENT node,
-      // instead of bouncing through the component's `interaction` state
-      // (which is stale by the time the next click fires).
       const showDialogue = (state) => {
         setInteraction({
           type: 'dialogue',
@@ -79,24 +88,24 @@ export default function Game() {
           onChoice: (choiceIndex) => {
             const next = advanceDialogue(state, choiceIndex)
 
-            // Handle effects later (quests, flags, etc.)
             if (next.effect) {
-              console.log("Dialogue effect:", next.effect)
+              console.log('Dialogue effect:', next.effect)
             }
 
-            // End node → close modal
             if (next.node.choices.length === 0) {
               setInteraction(null)
               return
             }
 
-            // Continue dialogue
             showDialogue(next)
           }
         })
       }
 
-      showDialogue(startDialogue(npc.dialogueTreeId))
+      const initialState = startDialogue(npc.dialogueTreeId)
+      if (initialState) {
+        showDialogue(initialState)
+      }
       return
     }
 
@@ -122,60 +131,66 @@ export default function Game() {
     if (!game) return
 
     function handleKey(e) {
-      if (interaction) return
+      // Lock movement only during dialogue
+      if (interaction?.type === 'dialogue') return
 
-      const { player, worlds, currentWorldId } = game
-      const world = worlds[currentWorldId]
+      setGame(prev => {
+        const { player, worlds, currentWorldId } = prev
+        const world = worlds[currentWorldId]
 
-      let dx = 0, dy = 0
+        let dx = 0, dy = 0
 
-      if (e.key === 'w' || e.key === 'ArrowUp') dy = -1
-      if (e.key === 's' || e.key === 'ArrowDown') dy = 1
-      if (e.key === 'a' || e.key === 'ArrowLeft') dx = -1
-      if (e.key === 'd' || e.key === 'ArrowRight') dx = 1
+        if (e.key === 'w' || e.key === 'ArrowUp') dy = -1
+        if (e.key === 's' || e.key === 'ArrowDown') dy = 1
+        if (e.key === 'a' || e.key === 'ArrowLeft') dx = -1
+        if (e.key === 'd' || e.key === 'ArrowRight') dx = 1
 
-      if (dx === 0 && dy === 0) return
+        if (dx === 0 && dy === 0) return prev
 
-      const newX = player.x + dx
-      const newY = player.y + dy
+        const newX = player.x + dx
+        const newY = player.y + dy
 
-      if (!world.grid[newY] || !world.grid[newY][newX]) return
+        if (!world.grid[newY] || !world.grid[newY][newX]) return prev
 
-      const cell = world.grid[newY][newX]
+        const cell = world.grid[newY][newX]
 
-      // PORTAL
-      if (cell === 'portal' || cell?.type === 'portal') {
-        const portal = world.portals.find(p => p.x === newX && p.y === newY)
-        if (portal) {
-          setGame({
-            ...game,
-            currentWorldId: portal.targetWorldId,
-            player: { x: 5, y: 5, inventory: [...player.inventory] }
-          })
-          return
+        // PORTAL
+        if (cell.type === 'portal') {
+          const portal = world.portals.find(p => p.x === newX && p.y === newY)
+          if (portal) {
+            return {
+              ...prev,
+              currentWorldId: portal.targetWorldId,
+              player: {
+                x: 5,
+                y: 5,
+                inventory: [...player.inventory]
+              }
+            }
+          }
         }
-      }
 
-      // ENTITY INTERACTION
-      if (cell?.entity) {
-        handleInteraction(cell.entity, newX, newY)
-        return
-      }
+        // ENTITY INTERACTION
+        if (cell.entity) {
+          handleInteraction(cell.entity, newX, newY)
+          return prev
+        }
 
-      // MOVE
-      setGame({
-        ...game,
-        player: { 
-          ...player,
-          x: newX,
-          y: newY
+        // MOVE
+        return {
+          ...prev,
+          player: {
+            ...player,
+            x: newX,
+            y: newY
+          }
         }
       })
     }
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [game, interaction])
+  }, [interaction, game])
 
   // CAMERA FOLLOW
   useEffect(() => {
@@ -213,13 +228,14 @@ export default function Game() {
         >
           {world.grid.map((row, y) =>
             row.map((cell, x) => {
-              const cellType = typeof cell === 'string' ? cell : cell.type
-              let cls = 'cell t-' + cellType
+              let cls = `cell t-${cell.type}`
 
-              if (cell.entity?.kind === 'npc') cls = 'cell t-npc'
-              if (cell.entity?.kind === 'item') cls = 'cell t-item'
+              if (cell.entity?.kind === 'npc') cls += ' has-npc'
+              if (cell.entity?.kind === 'item') cls += ' has-item'
 
-              if (player.x === x && player.y === y) cls = 'cell t-player'
+              if (player.x === x && player.y === y) {
+                cls = 'cell t-player'
+              }
 
               return (
                 <div
@@ -240,7 +256,7 @@ export default function Game() {
             <strong>World:</strong> {currentWorldId + 1} / {WORLD_COUNT}
           </div>
           <div>
-            <strong>Terrain:</strong> {terrainLabel(playerTerrain.type || playerTerrain)}
+            <strong>Terrain:</strong> {terrainLabel(playerTerrain.type)}
           </div>
           <div>
             <strong>Player:</strong> ({player.x}, {player.y})
