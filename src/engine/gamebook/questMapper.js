@@ -1,5 +1,3 @@
-// gamebookEngine/questMapper.js
-//
 // Quest definitions, plus the link between "what stage is this quest at" and
 // "which dialogue node should this NPC open with". This is the actual
 // gamebook-routing piece — re-visiting the same NPC gives a different

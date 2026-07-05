@@ -3,17 +3,19 @@ import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
 import InteractionModal from './interaction/InteractionModal'
 import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
-import { startDialogue, advanceDialogue } from '../data/dialog/dialogEngine'
+import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
+import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
+import '../data/quests' // side-effect: registers quest definitions
 
 function createNewGame() {
   const worlds = generateNetwork()
   return {
     worlds,
     currentWorldId: 0,
-    player: { 
-      x: 5, 
+    player: {
+      x: 5,
       y: 5,
-      inventory: []
+      ...createGamebookState() // gives flags: {}, quests: {}, inventory: []
     }
   }
 }
@@ -72,44 +74,45 @@ export default function Game() {
     setInteraction(null)
   }
 
-  // Dialogue + Item Interaction
-  function handleInteraction(entity, x, y) {
+ // Dialogue + Item Interaction
+  function handleInteraction(entity, x, y, playerState) {
     if (!entity) return
 
-    // NPC → Dialogue Tree
     if (entity.kind === 'npc') {
       const npc = NPCS[entity.id]
-      if (!npc || !npc.dialogueTreeId) return
+      const tree = npc && DIALOGUE_TREES[npc.dialogueTreeId]
+      if (!tree) return
 
-      const showDialogue = (state) => {
+      const showDialogue = (view, gamebookState) => {
+        if (!view) { setInteraction(null); return }
+
         setInteraction({
           type: 'dialogue',
-          state,
-          onChoice: (choiceIndex) => {
-            const next = advanceDialogue(state, choiceIndex)
+          view,
+          onChoice: (choiceIdx) => {
+            const result = chooseDialogueOption(tree, gamebookState, view.nodeId, choiceIdx)
 
-            if (next.effect) {
-              console.log('Dialogue effect:', next.effect)
-            }
+            // persist any setFlag/giveItem/startQuest/etc effects onto the player
+            setGame(prev => ({
+              ...prev,
+              player: { ...prev.player, ...result.state }
+            }))
 
-            if (next.node.choices.length === 0) {
+            if (result.isEnd || !result.view) {
               setInteraction(null)
               return
             }
 
-            showDialogue(next)
+            showDialogue(result.view, result.state)
           }
         })
       }
 
-      const initialState = startDialogue(npc.dialogueTreeId)
-      if (initialState) {
-        showDialogue(initialState)
-      }
+      const { view, state } = startDialogue(tree, playerState)
+      showDialogue(view, state)
       return
     }
 
-    // ITEM → Pickup modal
     if (entity.kind === 'item') {
       const item = ITEMS[entity.id]
       if (!item) return
@@ -162,9 +165,9 @@ export default function Game() {
               ...prev,
               currentWorldId: portal.targetWorldId,
               player: {
+                ...player,
                 x: 5,
-                y: 5,
-                inventory: [...player.inventory]
+                y: 5
               }
             }
           }
@@ -172,7 +175,7 @@ export default function Game() {
 
         // ENTITY INTERACTION
         if (cell.entity) {
-          handleInteraction(cell.entity, newX, newY)
+          handleInteraction(cell.entity, newX, newY, player)
           return prev
         }
 

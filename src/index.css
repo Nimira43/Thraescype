@@ -234,3 +234,11 @@ body {
   background: var(--grey-5);
   border-radius: 4px;
 }
+
+.modal-speaker {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}

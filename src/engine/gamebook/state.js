@@ -1,5 +1,3 @@
-// gamebookEngine/state.js
-//
 // The "save file" shape for the dialogue/quest system. Deliberately plain
 // data — no classes, no functions stored on it — so it drops straight into
 // the existing storage.js (JSON.stringify/parse) and into player state.
@@ -10,9 +8,6 @@
 //     inventory: [itemId, itemId, ...]
 //   }
 //
-// Note: `inventory` is the same shape as game.player.inventory already is
-// in Game.jsx, so when wired in, that array can just BE this one —
-// no migration needed.
 
 export function createGamebookState(overrides = {}) {
   return {

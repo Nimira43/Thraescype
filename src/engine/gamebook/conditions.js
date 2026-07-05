@@ -1,5 +1,3 @@
-// gamebookEngine/conditions.js
-//
 // Declarative conditions so the story content can stay as plain data
 // (readable, diffable, eventually JSON-able) instead of scattering one-off
 // JS predicates through every dialogue tree.

@@ -1,5 +1,3 @@
-// gamebookEngine/dialogueEngine.js
-//
 // The reusable dialogue handler itself. It knows nothing about React and
 // nothing about Game.jsx — feed it a tree + gamebook state, it hands
 // back a "view" (what to render) and lets you apply a choice to get the
@@ -27,7 +25,7 @@
 //     }
 //   }
 //
-// Usage (once this is wired in):
+// Usage:
 //
 //   import { startDialogue, chooseDialogueOption } from './gamebookEngine'
 //

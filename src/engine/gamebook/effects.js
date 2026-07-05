@@ -1,5 +1,3 @@
-// gamebookEngine/effects.js
-//
 // Effects are the consequences of a choice. applyEffect always returns a NEW
 // state object — the one passed in is never mutated, consistent with how
 // Game.jsx already treats its state.
