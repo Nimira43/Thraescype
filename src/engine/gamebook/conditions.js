@@ -1,26 +1,3 @@
-// Declarative conditions so the story content can stay as plain data
-// (readable, diffable, eventually JSON-able) instead of scattering one-off
-// JS predicates through every dialogue tree.
-//
-// A condition is { type: '...', ...params }. Combine with and / or / not.
-// If omitted entirely, a condition is treated as always-true.
-//
-// Supported types:
-//
-//   { type: 'flag', key, equals = true }
-//   { type: 'hasItem', itemId }
-//   { type: 'questActive', questId }
-//   { type: 'questStage', questId, is }                    -> exact stage match
-//   { type: 'questStageAtLeast', questId, stage }          -> uses quest.stageOrder
-//   { type: 'and', conditions: [...] }
-//   { type: 'or',  conditions: [...] }
-//   { type: 'not', condition }
-//
-// Escape hatch: a condition can also just be a function, called as
-// condition(state) -> boolean, for anything too fiddly to express
-// declaratively. Use sparingly — declarative conditions are what keep the
-// story content portable/serialisable.
-
 import { hasFlag, hasItem, getQuestStage } from './state'
 import { isStageAtLeast } from './questMapper'
 

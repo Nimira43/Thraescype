@@ -14,7 +14,4 @@ export const QUESTS_DATA = [
   }
 ]
 
-// Registering at import time means anything that imports this module
-// (even just for its side effect) guarantees QUESTS is populated before
-// any dialogue condition/effect touches quest state.
 registerQuests(QUESTS_DATA)

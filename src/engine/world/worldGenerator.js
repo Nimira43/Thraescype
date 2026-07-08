@@ -1,7 +1,7 @@
 import { createNPC, createItem } from '../../data/factories/entityFactory'
 
-const WIDTH = 60
-const HEIGHT = 40
+export const WIDTH = 60
+export const HEIGHT = 40
 const PLAINS = 'plains'
 
 function createGrid(fn) {

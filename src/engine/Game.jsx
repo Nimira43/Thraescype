@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
+import { WIDTH as WORLD_WIDTH, HEIGHT as WORLD_HEIGHT } from '../engine/world/worldGenerator'
+import { createCloud, stepCloud, getCloudCells } from '../engine/world/cloudSystem'
 import InteractionModal from './interaction/InteractionModal'
 import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-import '../data/quests' // side-effect: registers quest definitions
+import '../data/quests' 
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -15,7 +17,7 @@ function createNewGame() {
     player: {
       x: 5,
       y: 5,
-      ...createGamebookState() // gives flags: {}, quests: {}, inventory: []
+      ...createGamebookState() 
     }
   }
 }
@@ -42,6 +44,7 @@ export default function Game() {
   const gridRef = useRef(null)
   const [game, setGame] = useState(() => createNewGame())
   const [interaction, setInteraction] = useState(null)
+  const [cloud, setCloud] = useState(() => createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
 
   function pickUpItem(itemId, x, y) {
     setGame(prev => {
@@ -74,7 +77,6 @@ export default function Game() {
     setInteraction(null)
   }
 
- // Dialogue + Item Interaction
   function handleInteraction(entity, x, y, playerState) {
     if (!entity) return
 
@@ -92,7 +94,6 @@ export default function Game() {
           onChoice: (choiceIdx) => {
             const result = chooseDialogueOption(tree, gamebookState, view.nodeId, choiceIdx)
 
-            // persist any setFlag/giveItem/startQuest/etc effects onto the player
             setGame(prev => ({
               ...prev,
               player: { ...prev.player, ...result.state }
@@ -129,12 +130,10 @@ export default function Game() {
     }
   }
 
-  // MOVEMENT + PORTALS + ENTITY INTERACTION
   useEffect(() => {
     if (!game) return
 
     function handleKey(e) {
-      // Lock movement only during dialogue
       if (interaction?.type === 'dialogue') return
 
       setGame(prev => {
@@ -157,7 +156,6 @@ export default function Game() {
 
         const cell = world.grid[newY][newX]
 
-        // PORTAL
         if (cell.type === 'portal') {
           const portal = world.portals.find(p => p.x === newX && p.y === newY)
           if (portal) {
@@ -173,13 +171,11 @@ export default function Game() {
           }
         }
 
-        // ENTITY INTERACTION
         if (cell.entity) {
           handleInteraction(cell.entity, newX, newY, player)
           return prev
         }
 
-        // MOVE
         return {
           ...prev,
           player: {
@@ -195,7 +191,14 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [interaction, game])
 
-  // CAMERA FOLLOW
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCloud(prev => stepCloud(prev, WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
+    }, 900)
+
+    return () => clearInterval(interval)
+  }, [])
+
   useEffect(() => {
     if (!gridRef.current || !game) return
 
@@ -217,6 +220,7 @@ export default function Game() {
   const width = world.grid[0].length
   const height = world.grid.length
   const playerTerrain = world.grid[player.y][player.x]
+  const cloudCells = cloud.worldId === currentWorldId ? getCloudCells(cloud) : null
 
   return (
     <div className='game-root'>
@@ -232,18 +236,25 @@ export default function Game() {
           {world.grid.map((row, y) =>
             row.map((cell, x) => {
               let cls = `cell t-${cell.type}`
+              let style
 
               if (cell.entity?.kind === 'npc') cls += ' has-npc'
               if (cell.entity?.kind === 'item') cls += ' has-item'
 
+              if (cloudCells?.has(`${x},${y}`)) {
+                style = { backgroundImage: `linear-gradient(${cloud.colour}, ${cloud.colour})` }
+              }
+
               if (player.x === x && player.y === y) {
                 cls = 'cell t-player'
+                style = undefined
               }
 
               return (
                 <div
                   key={`${x}-${y}`}
                   className={cls}
+                  style={style}
                 ></div>
               )
             })
@@ -270,7 +281,7 @@ export default function Game() {
         </div>
       </div>
 
-      <InteractionModal 
+      <InteractionModal
         data={interaction}
         onClose={() => setInteraction(null)}
       />

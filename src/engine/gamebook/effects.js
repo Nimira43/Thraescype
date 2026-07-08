@@ -1,19 +1,3 @@
-// Effects are the consequences of a choice. applyEffect always returns a NEW
-// state object — the one passed in is never mutated, consistent with how
-// Game.jsx already treats its state.
-//
-// Supported types:
-//
-//   { type: 'setFlag', key, value = true }
-//   { type: 'giveItem', itemId }
-//   { type: 'removeItem', itemId }
-//   { type: 'startQuest', questId, stage }    -> stage defaults to the quest's startStage
-//   { type: 'setQuestStage', questId, stage }
-//   { type: 'completeQuest', questId }        -> shorthand: jumps to the quest's final stage
-//
-// Escape hatch: an effect can also be a function, called as
-// effect(state) -> newState.
-
 import { QUESTS } from './questMapper'
 
 export function applyEffect(state, effect) {

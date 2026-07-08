@@ -1,41 +1,3 @@
-// The reusable dialogue handler itself. It knows nothing about React and
-// nothing about Game.jsx — feed it a tree + gamebook state, it hands
-// back a "view" (what to render) and lets you apply a choice to get the
-// next view + the next state.
-//
-// Tree shape:
-//
-//   {
-//     id: 'old_man_intro',
-//     startNode: 'greeting',
-//     entryPoints: [ ... ],             // optional — see questMapper.js
-//     nodes: {
-//       greeting: {
-//         speaker: 'Eadric the Withered',          // optional
-//         text: '...' | (state) => '...',
-//         choices: [
-//           {
-//             text: '...' | (state) => '...',
-//             next: 'explain_fracture',
-//             condition: <declarative condition>,   // optional — hide choice if false
-//             effects: [ <declarative effect>, ... ] // optional
-//           }
-//         ]
-//       }
-//     }
-//   }
-//
-// Usage:
-//
-//   import { startDialogue, chooseDialogueOption } from './gamebookEngine'
-//
-//   const { view, state } = startDialogue(tree, playerState)
-//   // ...render view.text + view.choices...
-//   const result = chooseDialogueOption(tree, state, view.nodeId, choiceIdx)
-//   // result.view  -> next thing to render (or null if tree ended)
-//   // result.state -> new player state, save this back
-//   // result.isEnd -> true when there are no more choices
-
 import { evaluateCondition } from './conditions'
 import { applyEffects } from './effects'
 import { resolveEntryNode } from './questMapper'
@@ -70,8 +32,6 @@ function buildView(tree, nodeId, state) {
   }
 }
 
-// Begin a conversation. Picks the right opening node via questMapper's
-// entryPoints (e.g. different greeting if a quest is already underway).
 export function startDialogue(tree, state) {
   const nodeId = resolveEntryNode(tree, state, evaluateCondition)
   return {
@@ -79,9 +39,6 @@ export function startDialogue(tree, state) {
   }
 }
 
-// Apply a choice made on `nodeId`. `choiceIdx` is the index into the VISIBLE
-// choice list you were handed in `view.choices` — not the raw node.choices
-// array, since some choices may be hidden by conditions.
 export function chooseDialogueOption(tree, state, nodeId, choiceIdx) {
   const node = tree.nodes[nodeId]
   if (!node) return {

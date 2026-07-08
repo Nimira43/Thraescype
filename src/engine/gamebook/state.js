@@ -1,14 +1,3 @@
-// The "save file" shape for the dialogue/quest system. Deliberately plain
-// data — no classes, no functions stored on it — so it drops straight into
-// the existing storage.js (JSON.stringify/parse) and into player state.
-//
-//   {
-//     flags:     { [flagKey]: true | false | any },
-//     quests:    { [questId]: stageId },
-//     inventory: [itemId, itemId, ...]
-//   }
-//
-
 export function createGamebookState(overrides = {}) {
   return {
     flags: {},
