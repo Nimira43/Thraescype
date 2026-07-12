@@ -1,4 +1,5 @@
-import { generateWorld} from './worldGenerator'
+import { generateWorld, WIDTH, HEIGHT } from './worldGenerator'
+import { placeWitchsLair } from './witchsLair'
 
 export const WORLD_COUNT = 20
 export const PORTALS_PER_WORLD = 3
@@ -24,9 +25,9 @@ export function generateNetwork() {
 
     const a = Math.floor(Math.random() * WORLD_COUNT)
     const b = Math.floor(Math.random() * WORLD_COUNT)
-    
+
     if (a === b) continue
-    
+
     if (
       edges.some(
         e =>
@@ -34,7 +35,7 @@ export function generateNetwork() {
           (e[0] === b && e[1] === a)
       )
     ) continue
-    
+
     if (
       degrees[a] >= PORTALS_PER_WORLD ||
       degrees[b] >= PORTALS_PER_WORLD
@@ -50,6 +51,12 @@ export function generateNetwork() {
     worlds[b].portals.push(a)
   })
 
-  return worlds
+  const generatedWorlds = worlds
     .map(w => generateWorld(w.id, w.portals))
+
+  const lairWorldIndex = Math.floor(Math.random() * generatedWorlds.length)
+  placeWitchsLair(generatedWorlds[lairWorldIndex], WIDTH, HEIGHT)
+
+  return generatedWorlds
 }
+
