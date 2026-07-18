@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
 import { WIDTH as WORLD_WIDTH, HEIGHT as WORLD_HEIGHT } from '../engine/world/worldGenerator'
 import { createCloud, stepCloud, getCloudCells } from '../engine/world/cloudSystem'
+import { saveGame, loadGame, clearGame } from './save/storage'
 import InteractionModal from './interaction/InteractionModal'
 import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-import '../data/quests' 
+import '../data/quests' // side-effect: registers quest definitions
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -42,9 +43,16 @@ function terrainLabel(t) {
 
 export default function Game() {
   const gridRef = useRef(null)
-  const [game, setGame] = useState(() => createNewGame())
+  const [game, setGame] = useState(() => loadGame() || createNewGame())
   const [interaction, setInteraction] = useState(null)
   const [cloud, setCloud] = useState(() => createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
+
+  function handleNewGame() {
+    clearGame()
+    setGame(createNewGame())
+    setCloud(createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
+    setInteraction(null)
+  }
 
   function pickUpItem(itemId, x, y) {
     setGame(prev => {
@@ -200,6 +208,16 @@ export default function Game() {
   }, [])
 
   useEffect(() => {
+    if (!game) return
+
+    const timeout = setTimeout(() => {
+      saveGame(game)
+    }, 300)
+
+    return () => clearTimeout(timeout)
+  }, [game])
+
+  useEffect(() => {
     if (!gridRef.current || !game) return
 
     const cellSize = 16
@@ -242,7 +260,7 @@ export default function Game() {
               if (cell.entity?.kind === 'item') cls += ' has-item'
 
               if (cloudCells?.has(`${x},${y}`)) {
-                style = { backgroundImage: `linear-gradient(${cloud.colour}, ${cloud.colour})` }
+                style = { backgroundImage: `linear-gradient(${cloud.color}, ${cloud.color})` }
               }
 
               if (player.x === x && player.y === y) {
@@ -279,6 +297,13 @@ export default function Game() {
             <strong>Portals:</strong> {world.portals.length}
           </div>
         </div>
+
+        <button
+          className='modal-btn'
+          onClick={handleNewGame}
+        >
+          New Game
+        </button>
       </div>
 
       <InteractionModal
@@ -288,3 +313,8 @@ export default function Game() {
     </div>
   )
 }
+
+
+
+
+
