@@ -18,7 +18,7 @@ function createNewGame() {
     player: {
       x: 5,
       y: 5,
-      ...createGamebookState() 
+      ...createGamebookState({ inventory: ['piece_of_metal'] })
     }
   }
 }
@@ -83,6 +83,19 @@ export default function Game() {
     })
 
     setInteraction(null)
+  }
+
+  function viewInventoryItem(itemId) {
+    const item = ITEMS[itemId]
+    if (!item) return
+
+    setInteraction({
+      type: 'item',
+      item,
+      choices: [
+        { label: 'Close', action: () => setInteraction(null) }
+      ]
+    })
   }
 
   function handleInteraction(entity, x, y, playerState) {
@@ -260,7 +273,7 @@ export default function Game() {
               if (cell.entity?.kind === 'item') cls += ' has-item'
 
               if (cloudCells?.has(`${x},${y}`)) {
-                style = { backgroundImage: `linear-gradient(${cloud.color}, ${cloud.color})` }
+                style = { backgroundImage: `linear-gradient(${cloud.colour}, ${cloud.colour})` }
               }
 
               if (player.x === x && player.y === y) {
@@ -298,6 +311,26 @@ export default function Game() {
           </div>
         </div>
 
+        <div className='inventory-block'>
+          <div className='inventory-title'>Inventory</div>
+          {player.inventory.length === 0 && (
+            <div className='inventory-empty'>Nothing carried.</div>
+          )}
+          <div className='inventory-list'>
+            {player.inventory.map((itemId, idx) => (
+              <button
+                key={`${itemId}-${idx}`}
+                className='inventory-item'
+                onClick={() => viewInventoryItem(itemId)}
+              >
+                {ITEMS[itemId]?.name || itemId}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <strong>Cloud sensed in:</strong> World {cloud.worldId + 1}
+        </div>
         <button
           className='modal-btn'
           onClick={handleNewGame}
@@ -313,8 +346,3 @@ export default function Game() {
     </div>
   )
 }
-
-
-
-
-
