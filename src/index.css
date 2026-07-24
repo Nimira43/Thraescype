@@ -283,3 +283,44 @@ body {
   color: var(--light);
   border-color: var(--grey-4);
 }
+
+.modal-warning {
+  font-size: 16px;
+  color: var(--grey-5);
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.modal-choices-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.modal-btn-close {
+  margin-top: 10px;
+}
+
+/* Firefox */
+.modal-choices-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-2) var(--black);
+}
+
+/* Chrome / Edge / Safari */
+.modal-choices-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-choices-scroll::-webkit-scrollbar-track {
+  background: var(--black);
+}
+
+.modal-choices-scroll::-webkit-scrollbar-thumb {
+  background: var(--grey-2);
+  border: 1px solid var(--light);
+}
+
+.modal-choices-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--grey-3);
+}

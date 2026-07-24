@@ -4,6 +4,25 @@ export const WIDTH = 60
 export const HEIGHT = 40
 const PLAINS = 'plains'
 
+const TERRAIN_ITEM_TABLE = {
+  forest: {
+    chance: 0.02,
+    items: ['wood', 'wild_berries', 'herbs']
+  },
+  water: {
+    chance: 0.02,
+    items: ['water']
+  },
+  hill: {
+    chance: 0.008,
+    items: ['potato', 'sharp_metal_shard']
+  },
+  plains: {
+    chance: 0.006,
+    items: ['wild_berries']
+  }
+}
+
 function createGrid(fn) {
   const grid = []
   for (let y = 0; y < HEIGHT; y++) {
@@ -118,6 +137,25 @@ export function placeItem(world, itemId, x, y) {
   world.grid[y][x].entity = createItem(itemId)
 }
 
+function populateWorldItems(world) {
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < WIDTH; x++) {
+      const cell = world.grid[y][x]
+
+      if (cell.entity) continue
+      if (cell.type === 'portal') continue
+
+      const table = TERRAIN_ITEM_TABLE[cell.type]
+      if (!table) continue
+
+      if (Math.random() < table.chance) {
+        const itemId = table.items[Math.floor(Math.random() * table.items.length)]
+        placeItem(world, itemId, x, y)
+      }
+    }
+  }
+}
+
 export function generateWorld(worldId, portalTargets) {
   let elevation = randomField()
   elevation = smoothField(elevation, 2)
@@ -176,6 +214,8 @@ export function generateWorld(worldId, portalTargets) {
     }
   })
 
+  populateWorldItems(world)
+
   if (worldId === 0) {
     placeNPC(world, 'old_man_1', 10, 10)
     placeItem(world, 'lost_relic', 15, 12)
@@ -183,5 +223,3 @@ export function generateWorld(worldId, portalTargets) {
 
   return world
 }
-
-

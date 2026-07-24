@@ -3,6 +3,7 @@ import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
 import { WIDTH as WORLD_WIDTH, HEIGHT as WORLD_HEIGHT } from '../engine/world/worldGenerator'
 import { createCloud, stepCloud, getCloudCells } from '../engine/world/cloudSystem'
 import { saveGame, loadGame, clearGame } from './save/storage'
+import { getTotalWeight, getCapacity, canCarry } from './inventory/weight'
 import InteractionModal from './interaction/InteractionModal'
 import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
@@ -85,7 +86,21 @@ export default function Game() {
     setInteraction(null)
   }
 
-  function viewInventoryItem(itemId) {
+  function dropItem(index) {
+    setGame(prev => {
+      const inventory = [...prev.player.inventory]
+      inventory.splice(index, 1)
+
+      return {
+        ...prev,
+        player: { ...prev.player, inventory }
+      }
+    })
+
+    setInteraction(null)
+  }
+
+  function viewInventoryItem(itemId, index) {
     const item = ITEMS[itemId]
     if (!item) return
 
@@ -93,8 +108,23 @@ export default function Game() {
       type: 'item',
       item,
       choices: [
-        { label: 'Close', action: () => setInteraction(null) }
+        {
+          label: 'Drop',
+          action: () => dropItem(index)
+        },
+        {
+          label: 'Close',
+          action: () => setInteraction(null)
+        }
       ]
+    })
+  }
+
+  function openInventory() {
+    setInteraction({
+      type: 'inventory',
+      items: game.player.inventory,
+      onSelect: (itemId, idx) => viewInventoryItem(itemId, idx)
     })
   }
 
@@ -139,13 +169,27 @@ export default function Game() {
       const item = ITEMS[entity.id]
       if (!item) return
 
+      const overweight = !canCarry(playerState.inventory, entity.id)
+
+      const choices = [
+        {
+          label: 'Leave',
+          action: () => setInteraction(null)
+        }
+      ]
+
+      if (!overweight) {
+        choices.unshift({
+          label: 'Pick up',
+          action: () => pickUpItem(entity.id, x, y)
+        })
+      }
+
       setInteraction({
         type: 'item',
         item,
-        choices: [
-          { label: 'Pick up', action: () => pickUpItem(entity.id, x, y) },
-          { label: 'Leave', action: () => setInteraction(null) }
-        ]
+        overweight,
+        choices
       })
       return
     }
@@ -252,6 +296,8 @@ export default function Game() {
   const height = world.grid.length
   const playerTerrain = world.grid[player.y][player.x]
   const cloudCells = cloud.worldId === currentWorldId ? getCloudCells(cloud) : null
+  const totalWeight = getTotalWeight(player.inventory)
+  const capacity = getCapacity(player.inventory)
 
   return (
     <div className='game-root'>
@@ -294,7 +340,9 @@ export default function Game() {
       </div>
 
       <div className='side-panel'>
-        <div className='side-title'>Þræscype</div>
+        <div className='side-title'>
+          Þræscype
+        </div>
 
         <div className='info-block'>
           <div>
@@ -309,28 +357,18 @@ export default function Game() {
           <div>
             <strong>Portals:</strong> {world.portals.length}
           </div>
-        </div>
-
-        <div className='inventory-block'>
-          <div className='inventory-title'>Inventory</div>
-          {player.inventory.length === 0 && (
-            <div className='inventory-empty'>Nothing carried.</div>
-          )}
-          <div className='inventory-list'>
-            {player.inventory.map((itemId, idx) => (
-              <button
-                key={`${itemId}-${idx}`}
-                className='inventory-item'
-                onClick={() => viewInventoryItem(itemId)}
-              >
-                {ITEMS[itemId]?.name || itemId}
-              </button>
-            ))}
+          <div>
+            <strong>Weight:</strong> {totalWeight} / {capacity}
           </div>
         </div>
-        <div>
-          <strong>Cloud sensed in:</strong> World {cloud.worldId + 1}
-        </div>
+
+        <button
+          className='modal-btn'
+          onClick={openInventory}
+        >
+          Inventory ({player.inventory.length})
+        </button>
+
         <button
           className='modal-btn'
           onClick={handleNewGame}

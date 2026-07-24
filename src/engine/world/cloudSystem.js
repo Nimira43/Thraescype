@@ -1,7 +1,6 @@
 import { CLOUD_SHAPE } from '../../data/entities/cloudShape'
 
-// const CLOUD_COLOUR = 'rgba(220, 220, 220, 0.18)'
-const CLOUD_COLOUR = 'rgb(255, 0, 0, 0.18)'
+const CLOUD_COLOUR = 'rgba(220, 220, 220, 0.18)'
 
 export function createCloud(worldCount, worldWidth, worldHeight) {
   return {
