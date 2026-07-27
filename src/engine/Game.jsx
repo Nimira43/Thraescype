@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
 import { WIDTH as WORLD_WIDTH, HEIGHT as WORLD_HEIGHT } from '../engine/world/worldGenerator'
 import { createCloud, stepCloud, getCloudCells } from '../engine/world/cloudSystem'
+import { stepBoar } from '../engine/world/boarSystem'
 import { saveGame, loadGame, clearGame } from './save/storage'
 import { getTotalWeight, getCapacity, canCarry } from './inventory/weight'
 import InteractionModal from './interaction/InteractionModal'
@@ -47,11 +48,18 @@ export default function Game() {
   const [game, setGame] = useState(() => loadGame() || createNewGame())
   const [interaction, setInteraction] = useState(null)
   const [cloud, setCloud] = useState(() => createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
+  const [boar, setBoar] = useState(null)
+
+  const worldsRef = useRef(game.worlds)
+  useEffect(() => {
+    worldsRef.current = game.worlds
+  }, [game.worlds])
 
   function handleNewGame() {
     clearGame()
     setGame(createNewGame())
     setCloud(createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
+    setBoar(null)
     setInteraction(null)
   }
 
@@ -108,14 +116,8 @@ export default function Game() {
       type: 'item',
       item,
       choices: [
-        {
-          label: 'Drop',
-          action: () => dropItem(index)
-        },
-        {
-          label: 'Close',
-          action: () => setInteraction(null)
-        }
+        { label: 'Drop', action: () => dropItem(index) },
+        { label: 'Close', action: () => setInteraction(null) }
       ]
     })
   }
@@ -125,6 +127,40 @@ export default function Game() {
       type: 'inventory',
       items: game.player.inventory,
       onSelect: (itemId, idx) => viewInventoryItem(itemId, idx)
+    })
+  }
+
+  function huntBoar() {
+    setGame(prev => ({
+      ...prev,
+      player: {
+        ...prev.player,
+        inventory: [...prev.player.inventory, 'boar_meat']
+      }
+    }))
+    setBoar(null)
+    setInteraction(null)
+  }
+
+  function handleBoarEncounter(playerState) {
+    const overweight = !canCarry(playerState.inventory, 'boar_meat')
+
+    const choices = [
+      { label: 'Leave', action: () => setInteraction(null) }
+    ]
+
+    if (!overweight) {
+      choices.unshift({ label: 'Hunt', action: huntBoar })
+    }
+
+    setInteraction({
+      type: 'item',
+      item: {
+        name: 'Wild Boar',
+        description: "A boar, tense and wary, watching you from the treeline. It hasn't noticed you yet."
+      },
+      overweight,
+      choices
     })
   }
 
@@ -172,17 +208,11 @@ export default function Game() {
       const overweight = !canCarry(playerState.inventory, entity.id)
 
       const choices = [
-        {
-          label: 'Leave',
-          action: () => setInteraction(null)
-        }
+        { label: 'Leave', action: () => setInteraction(null) }
       ]
 
       if (!overweight) {
-        choices.unshift({
-          label: 'Pick up',
-          action: () => pickUpItem(entity.id, x, y)
-        })
+        choices.unshift({ label: 'Pick up', action: () => pickUpItem(entity.id, x, y) })
       }
 
       setInteraction({
@@ -236,6 +266,11 @@ export default function Game() {
           }
         }
 
+        if (boar && boar.worldId === currentWorldId && boar.x === newX && boar.y === newY) {
+          handleBoarEncounter(player)
+          return prev
+        }
+
         if (cell.entity) {
           handleInteraction(cell.entity, newX, newY, player)
           return prev
@@ -254,11 +289,19 @@ export default function Game() {
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [interaction, game])
+  }, [interaction, game, boar])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCloud(prev => stepCloud(prev, WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
+    }, 900)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBoar(prev => stepBoar(prev, worldsRef.current))
     }, 900)
 
     return () => clearInterval(interval)
@@ -298,6 +341,7 @@ export default function Game() {
   const cloudCells = cloud.worldId === currentWorldId ? getCloudCells(cloud) : null
   const totalWeight = getTotalWeight(player.inventory)
   const capacity = getCapacity(player.inventory)
+  const boarHere = boar && boar.worldId === currentWorldId ? boar : null
 
   return (
     <div className='game-root'>
@@ -317,6 +361,10 @@ export default function Game() {
 
               if (cell.entity?.kind === 'npc') cls += ' has-npc'
               if (cell.entity?.kind === 'item') cls += ' has-item'
+
+              if (boarHere && boarHere.x === x && boarHere.y === y) {
+                cls += ' has-boar'
+              }
 
               if (cloudCells?.has(`${x},${y}`)) {
                 style = { backgroundImage: `linear-gradient(${cloud.colour}, ${cloud.colour})` }
