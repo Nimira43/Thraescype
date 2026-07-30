@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
 import { WIDTH as WORLD_WIDTH, HEIGHT as WORLD_HEIGHT } from '../engine/world/worldGenerator'
 import { createCloud, stepCloud, getCloudCells } from '../engine/world/cloudSystem'
-import { stepBoar } from '../engine/world/boarSystem'
+import { stepBoars } from '../engine/world/boarSystem'
 import { saveGame, loadGame, clearGame } from './save/storage'
 import { getTotalWeight, getCapacity, canCarry } from './inventory/weight'
 import InteractionModal from './interaction/InteractionModal'
@@ -10,7 +10,7 @@ import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-import '../data/quests' // side-effect: registers quest definitions
+import '../data/quests'
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -48,7 +48,7 @@ export default function Game() {
   const [game, setGame] = useState(() => loadGame() || createNewGame())
   const [interaction, setInteraction] = useState(null)
   const [cloud, setCloud] = useState(() => createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
-  const [boar, setBoar] = useState(null)
+  const [boars, setBoars] = useState([])
 
   const worldsRef = useRef(game.worlds)
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function Game() {
     clearGame()
     setGame(createNewGame())
     setCloud(createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
-    setBoar(null)
+    setBoars([])
     setInteraction(null)
   }
 
@@ -130,7 +130,7 @@ export default function Game() {
     })
   }
 
-  function huntBoar() {
+  function huntBoar(boarId) {
     setGame(prev => ({
       ...prev,
       player: {
@@ -138,11 +138,11 @@ export default function Game() {
         inventory: [...prev.player.inventory, 'boar_meat']
       }
     }))
-    setBoar(null)
+    setBoars(prev => prev.filter(b => b.id !== boarId))
     setInteraction(null)
   }
 
-  function handleBoarEncounter(playerState) {
+  function handleBoarEncounter(playerState, boarId) {
     const overweight = !canCarry(playerState.inventory, 'boar_meat')
 
     const choices = [
@@ -150,7 +150,7 @@ export default function Game() {
     ]
 
     if (!overweight) {
-      choices.unshift({ label: 'Hunt', action: huntBoar })
+      choices.unshift({ label: 'Hunt', action: () => huntBoar(boarId) })
     }
 
     setInteraction({
@@ -266,8 +266,11 @@ export default function Game() {
           }
         }
 
-        if (boar && boar.worldId === currentWorldId && boar.x === newX && boar.y === newY) {
-          handleBoarEncounter(player)
+        const encounteredBoar = boars.find(
+          b => b.worldId === currentWorldId && b.x === newX && b.y === newY
+        )
+        if (encounteredBoar) {
+          handleBoarEncounter(player, encounteredBoar.id)
           return prev
         }
 
@@ -289,7 +292,7 @@ export default function Game() {
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [interaction, game, boar])
+  }, [interaction, game, boars])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -301,7 +304,7 @@ export default function Game() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setBoar(prev => stepBoar(prev, worldsRef.current))
+      setBoars(prev => stepBoars(prev, worldsRef.current))
     }, 900)
 
     return () => clearInterval(interval)
@@ -341,7 +344,12 @@ export default function Game() {
   const cloudCells = cloud.worldId === currentWorldId ? getCloudCells(cloud) : null
   const totalWeight = getTotalWeight(player.inventory)
   const capacity = getCapacity(player.inventory)
-  const boarHere = boar && boar.worldId === currentWorldId ? boar : null
+
+  const boarCells = new Set(
+    boars
+      .filter(b => b.worldId === currentWorldId)
+      .map(b => `${b.x},${b.y}`)
+  )
 
   return (
     <div className='game-root'>
@@ -362,7 +370,7 @@ export default function Game() {
               if (cell.entity?.kind === 'npc') cls += ' has-npc'
               if (cell.entity?.kind === 'item') cls += ' has-item'
 
-              if (boarHere && boarHere.x === x && boarHere.y === y) {
+              if (boarCells.has(`${x},${y}`)) {
                 cls += ' has-boar'
               }
 

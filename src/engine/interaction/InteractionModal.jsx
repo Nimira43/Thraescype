@@ -10,7 +10,11 @@ export default function InteractionModal({ data, onClose }) {
     return (
       <div className='modal-overlay'>
         <div className='modal-box'>
-          {view.speaker && <div className='modal-speaker'>{view.speaker}</div>}
+          {view.speaker && (
+            <div className='modal-speaker'>
+              {view.speaker}
+            </div>
+          )}
           <p className='modal-text'>
             {view.text}
           </p>

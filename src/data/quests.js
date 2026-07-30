@@ -7,9 +7,15 @@ export const QUESTS_DATA = [
     startStage: 'started',
     stageOrder: ['started', 'relic_found', 'completed'],
     stages: {
-      started:     { description: 'Find the relic, said to rest in the marsh.' },
-      relic_found: { description: 'Return the relic to Eadric.' },
-      completed:   { description: 'The relic rests with Eadric once more.' }
+      started: {
+        description: 'Find the relic, said to rest in the marsh.'
+      },
+      relic_found: {
+        description: 'Return the relic to Eadric.'
+      },
+      completed: {
+        description: 'The relic rests with Eadric once more.'
+      }
     }
   }
 ]

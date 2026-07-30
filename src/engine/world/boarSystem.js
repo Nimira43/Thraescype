@@ -1,16 +1,11 @@
-// The wild boar: a scarce, huntable creature native to hill and forest
-// tiles. Same rhythm as the Cloud (appears, lingers briefly, vanishes,
-// reappears elsewhere) but instead of drifting, it's a fixed point the
-// player can walk up to and hunt for meat.
-//
-// Deliberately single-instance for now, same as the Cloud — scaling to
-// several boars roaming at once later would mean tracking an array of
-// these instead of one, but the spawn/lifespan logic itself wouldn't need
-// to change.
-
 const BOAR_TERRAIN = ['hill', 'forest']
-const LIFESPAN_MS = 6000 // how long it lingers before fleeing back into hiding
-const SPAWN_CHANCE = 0.05 // per tick, only rolled while no boar is currently active
+const LIFESPAN_MS = 6000
+const SPAWN_CHANCE = 0.06 
+const MAX_BOARS = 3
+
+function makeId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+}
 
 function findQualifyingTile(world, maxAttempts = 100) {
   for (let i = 0; i < maxAttempts; i++) {
@@ -23,27 +18,27 @@ function findQualifyingTile(world, maxAttempts = 100) {
 
     return { x, y }
   }
-  return null // no qualifying tile found this attempt — just try again next tick
+  return null 
 }
 
-// One tick of boar behaviour. `worlds` is the live worlds array so a fresh
-// spawn always reflects current terrain/entities, not a stale snapshot.
-export function stepBoar(boar, worlds) {
-  if (boar) {
-    const age = Date.now() - boar.spawnedAt
-    return age >= LIFESPAN_MS ? null : boar // flee once its time is up, otherwise unchanged
-  }
+export function stepBoars(boars, worlds) {
+  const alive = boars.filter(b => Date.now() - b.spawnedAt < LIFESPAN_MS)
 
-  if (Math.random() >= SPAWN_CHANCE) return null // stays absent this tick
+  if (alive.length >= MAX_BOARS) return alive
+  if (Math.random() >= SPAWN_CHANCE) return alive
 
   const world = worlds[Math.floor(Math.random() * worlds.length)]
   const tile = findQualifyingTile(world)
-  if (!tile) return null
+  if (!tile) return alive
 
-  return {
-    worldId: world.id,
-    x: tile.x,
-    y: tile.y,
-    spawnedAt: Date.now()
-  }
+  return [
+    ...alive,
+    {
+      id: makeId(),
+      worldId: world.id,
+      x: tile.x,
+      y: tile.y,
+      spawnedAt: Date.now()
+    }
+  ]
 }
