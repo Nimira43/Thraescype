@@ -24,5 +24,4 @@ dist-ssr
 *.sw?
 
 # Plot / Spoilers files
-
-src/plots/the-reckoning.md
+LORE.md

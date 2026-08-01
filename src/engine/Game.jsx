@@ -10,7 +10,7 @@ import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-import '../data/quests'
+import '../data/quests' // side-effect: registers quest definitions
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -164,6 +164,7 @@ export default function Game() {
     })
   }
 
+  
   function handleInteraction(entity, x, y, playerState) {
     if (!entity) return
 
@@ -229,6 +230,7 @@ export default function Game() {
     if (!game) return
 
     function handleKey(e) {
+      if (e.repeat) return
       if (interaction?.type === 'dialogue') return
 
       setGame(prev => {
@@ -250,6 +252,8 @@ export default function Game() {
         if (!world.grid[newY] || !world.grid[newY][newX]) return prev
 
         const cell = world.grid[newY][newX]
+
+        if (cell.type === 'mountain') return prev
 
         if (cell.type === 'portal') {
           const portal = world.portals.find(p => p.x === newX && p.y === newY)

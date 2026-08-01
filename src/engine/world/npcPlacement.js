@@ -4,7 +4,13 @@ const BYSTANDER_IDS = [
   'wulfstan_wanderer',
   'mildburg_forager',
   'cenric_the_wary',
-  'eadgyth_traveller'
+  'eadgyth_traveller',
+  'ealdred_elder',
+  'frithuswith_chronicler',
+  'godwine_ironhand',
+  'hilda_devout',
+  'ecgbert_the_lost',
+  'wynflaed_wild'
 ]
 
 const AVOID_TERRAIN = ['water', 'deepwater', 'portal', 'mountain']
@@ -28,7 +34,6 @@ export function placeBystanders(worlds) {
     const world = worlds[Math.floor(Math.random() * worlds.length)]
     const tile = findQualifyingTile(world)
     if (!tile) return 
-
     placeNPC(world, npcId, tile.x, tile.y)
   })
 }

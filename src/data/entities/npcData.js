@@ -22,5 +22,35 @@ export const NPCS = {
   eadgyth_traveller: {
     name: 'Eadgyth the Traveller',
     dialogueTreeId: 'eadgyth_traveller'
+  },
+
+  ealdred_elder: {
+    name: 'Ealdred the Elder',
+    dialogueTreeId: 'ealdred_elder'
+  },
+
+  frithuswith_chronicler: {
+    name: 'Frithuswith the Chronicler',
+    dialogueTreeId: 'frithuswith_chronicler'
+  },
+
+  godwine_ironhand: {
+    name: 'Godwine Ironhand',
+    dialogueTreeId: 'godwine_ironhand'
+  },
+
+  hilda_devout: {
+    name: 'Hilda the Devout',
+    dialogueTreeId: 'hilda_devout'
+  },
+
+  ecgbert_the_lost: {
+    name: 'Ecgbert the Lost',
+    dialogueTreeId: 'ecgbert_the_lost'
+  },
+
+  wynflaed_wild: {
+    name: 'Wynflaed the Wild',
+    dialogueTreeId: 'wynflaed_wild'
   }
 }
