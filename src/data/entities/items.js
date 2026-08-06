@@ -59,6 +59,7 @@ export const ITEMS = {
     name: 'Wild Berries',
     category: 'food',
     weight: 0,
+    restore: { stamina: 5 },
     description: 'A small handful of dark berries, found low in the undergrowth. Edible, if not plentiful.'
   },
 
@@ -66,6 +67,7 @@ export const ITEMS = {
     name: 'Potato',
     category: 'food',
     weight: 0,
+    restore: { stamina: 8 },
     description: 'A single potato, pulled from soft earth. Unremarkable, and welcome for it.'
   },
 
@@ -73,6 +75,7 @@ export const ITEMS = {
     name: 'Boar Meat',
     category: 'food',
     weight: 1,
+    restore: { stamina: 15 },
     description: 'Raw meat, still warm. Taken from something that no longer needs it.'
   },
 
@@ -80,6 +83,7 @@ export const ITEMS = {
     name: 'Water',
     category: 'food',
     weight: 2,
+    restore: { stamina: 10 },
     description: 'A skin of clean water, drawn from a source that still runs true.'
   },
 
@@ -87,9 +91,9 @@ export const ITEMS = {
     name: 'Herbs',
     category: 'food',
     weight: 0,
-    description: 'A bundle of wild herbs, sharp-smelling. Better in something than alone.'
+    restore: { constitution: 10 },
+    description: 'A bundle of wild herbs, sharp-smelling. Chewed raw, they do little for hunger — but they mend what hunger cannot.'
   },
-
 
   rusty_sword: {
     name: 'Rusty Sword',
@@ -109,6 +113,7 @@ export const ITEMS = {
     name: 'Stew',
     category: 'food',
     weight: 1,
+    restore: { stamina: 25 },
     description: 'A thick stew, simmered from whatever the worlds would give up. Better hot.'
   },
 
@@ -117,5 +122,13 @@ export const ITEMS = {
     category: 'gear',
     weight: 0,
     description: 'Cloth bound tight with twine round a sliver of old metal. Rough, but it holds more than your arms alone ever could.'
+  },
+
+  strong_medicine: {
+    name: 'Strong Medicine',
+    category: 'medicine',
+    weight: 1,
+    restore: { constitution: 'full' },
+    description: 'A pungent draught, herb steeped in water until thick as syrup. Bitter, but it mends what little else can.'
   }
 }

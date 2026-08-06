@@ -5,12 +5,20 @@ import { createCloud, stepCloud, getCloudCells } from '../engine/world/cloudSyst
 import { stepBoars } from '../engine/world/boarSystem'
 import { saveGame, loadGame, clearGame } from './save/storage'
 import { getTotalWeight, getCapacity, canCarry } from './inventory/weight'
+import {
+  STAMINA_MAX,
+  CONSTITUTION_MAX,
+  applyMovementCost,
+  regenStamina,
+  applyRestore,
+  isDead
+} from './player/vitals'
 import InteractionModal from './interaction/InteractionModal'
 import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-import '../data/quests' // side-effect: registers quest definitions
+import '../data/quests' 
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -20,6 +28,8 @@ function createNewGame() {
     player: {
       x: 5,
       y: 5,
+      stamina: STAMINA_MAX,
+      constitution: CONSTITUTION_MAX,
       ...createGamebookState({ inventory: ['piece_of_metal'] })
     }
   }
@@ -108,18 +118,38 @@ export default function Game() {
     setInteraction(null)
   }
 
+  function consumeItem(itemId, index) {
+    const item = ITEMS[itemId]
+    if (!item?.restore) return
+
+    setGame(prev => {
+      const inventory = [...prev.player.inventory]
+      inventory.splice(index, 1)
+
+      const restoredPlayer = applyRestore({ ...prev.player, inventory }, item.restore)
+
+      return { ...prev, player: restoredPlayer }
+    })
+
+    setInteraction(null)
+  }
+
   function viewInventoryItem(itemId, index) {
     const item = ITEMS[itemId]
     if (!item) return
 
-    setInteraction({
-      type: 'item',
-      item,
-      choices: [
-        { label: 'Drop', action: () => dropItem(index) },
-        { label: 'Close', action: () => setInteraction(null) }
-      ]
-    })
+    const choices = []
+
+    if (item.restore) {
+      choices.push({ label: 'Consume', action: () => consumeItem(itemId, index) })
+    }
+
+    choices.push(
+      { label: 'Drop', action: () => dropItem(index) },
+      { label: 'Close', action: () => setInteraction(null) }
+    )
+
+    setInteraction({ type: 'item', item, choices })
   }
 
   function openInventory() {
@@ -164,7 +194,6 @@ export default function Game() {
     })
   }
 
-  
   function handleInteraction(entity, x, y, playerState) {
     if (!entity) return
 
@@ -235,6 +264,9 @@ export default function Game() {
 
       setGame(prev => {
         const { player, worlds, currentWorldId } = prev
+
+        if (isDead(player)) return prev
+
         const world = worlds[currentWorldId]
 
         let dx = 0, dy = 0
@@ -286,7 +318,7 @@ export default function Game() {
         return {
           ...prev,
           player: {
-            ...player,
+            ...applyMovementCost(player, cell.type),
             x: newX,
             y: newY
           }
@@ -310,6 +342,17 @@ export default function Game() {
     const interval = setInterval(() => {
       setBoars(prev => stepBoars(prev, worldsRef.current))
     }, 900)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGame(prev => {
+        if (isDead(prev.player)) return prev
+        return { ...prev, player: regenStamina(prev.player) }
+      })
+    }, 4000)
 
     return () => clearInterval(interval)
   }, [])
@@ -348,6 +391,7 @@ export default function Game() {
   const cloudCells = cloud.worldId === currentWorldId ? getCloudCells(cloud) : null
   const totalWeight = getTotalWeight(player.inventory)
   const capacity = getCapacity(player.inventory)
+  const gameOver = isDead(player)
 
   const boarCells = new Set(
     boars
@@ -400,9 +444,7 @@ export default function Game() {
       </div>
 
       <div className='side-panel'>
-        <div className='side-title'>
-          Þræscype
-        </div>
+        <div className='side-title'>Þræscype</div>
 
         <div className='info-block'>
           <div>
@@ -419,6 +461,12 @@ export default function Game() {
           </div>
           <div>
             <strong>Weight:</strong> {totalWeight} / {capacity}
+          </div>
+          <div>
+            <strong>Stamina:</strong> {player.stamina} / {STAMINA_MAX}
+          </div>
+          <div>
+            <strong>Constitution:</strong> {player.constitution} / {CONSTITUTION_MAX}
           </div>
         </div>
 
@@ -441,6 +489,21 @@ export default function Game() {
         data={interaction}
         onClose={() => setInteraction(null)}
       />
+
+      {gameOver && (
+        <div className='modal-overlay'>
+          <div className='modal-box'>
+            <p className='modal-text'>
+              Your strength has failed you. The Fractured Worlds claim another.
+            </p>
+            <div className='modal-choices'>
+              <button className='modal-btn' onClick={handleNewGame}>
+                New Game
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
