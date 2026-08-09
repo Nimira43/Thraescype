@@ -5,22 +5,10 @@ export const HEIGHT = 40
 const PLAINS = 'plains'
 
 const TERRAIN_ITEM_TABLE = {
-  forest: {
-    chance: 0.02,
-    items: ['wood', 'wild_berries', 'herbs']
-  },
-  water: {
-    chance: 0.02,
-    items: ['water']
-  },
-  hill: {
-    chance: 0.008,
-    items: ['potato', 'sharp_metal_shard']
-  },
-  plains: {
-    chance: 0.006,
-    items: ['wild_berries']
-  }
+  forest: { chance: 0.02, items: ['wood', 'wild_berries', 'herbs'] },
+  water: { chance: 0.02, items: ['water'] },
+  hill: { chance: 0.008, items: ['potato', 'sharp_metal_shard'] },
+  plains: { chance: 0.006, items: ['wild_berries'] }
 }
 
 function createGrid(fn) {
@@ -215,11 +203,6 @@ export function generateWorld(worldId, portalTargets) {
   })
 
   populateWorldItems(world)
-
-  if (worldId === 0) {
-    placeNPC(world, 'old_man_1', 10, 10)
-    placeItem(world, 'lost_relic', 15, 12)
-  }
 
   return world
 }

@@ -240,6 +240,12 @@ body {
   border-radius: 3px;
 }
 
+.has-quest-item {
+  background: #8a6d3f;
+  border: 1px solid #5a4526;
+  border-radius: 4px;
+}
+
 .modal-speaker {
   font-size: 14px;
   text-transform: uppercase;

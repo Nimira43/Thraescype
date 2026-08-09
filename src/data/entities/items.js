@@ -3,6 +3,7 @@ export const ITEMS = {
     name: 'Ancient Relic',
     category: 'relic',
     weight: 1,
+    questItem: true,
     description: 'A carved stone, warm to the touch.'
   },
 
@@ -25,6 +26,22 @@ export const ITEMS = {
     category: 'relic',
     weight: 1,
     description: 'A tarnished cup, cold and empty. It rattles faintly, as if something long dried still clings inside.'
+  },
+
+  eadric_locket: {
+    name: 'Tarnished Locket',
+    category: 'relic',
+    weight: 1,
+    questItem: true,
+    description: 'A small locket, its hinge stiff with age. Empty inside — whatever picture it once held is long gone.'
+  },
+
+  eadric_pipe: {
+    name: 'Cracked Pipe',
+    category: 'relic',
+    weight: 1,
+    questItem: true,
+    description: "A wooden pipe, its bowl split clean through. Well-used, once, by someone who clearly loved it."
   },
 
   wood: {
@@ -130,5 +147,12 @@ export const ITEMS = {
     weight: 1,
     restore: { constitution: 'full' },
     description: 'A pungent draught, herb steeped in water until thick as syrup. Bitter, but it mends what little else can.'
+  },
+
+  old_book: {
+    name: 'Old Book',
+    category: 'lore',
+    weight: 2,
+    description: 'A weathered book, its pages soft with handling. It speaks of Arian — general, inventor, and by its own account, a crueler man than history remembers. His Alchemists, it says, were the ones who truly gave his inventions their teeth.'
   }
 }

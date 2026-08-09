@@ -1,82 +1,109 @@
 export const DIALOGUE_TREES = {
-  old_man_intro: {
-    id: 'old_man_intro',
+  eadric_heirlooms: {
+    id: 'eadric_heirlooms',
     startNode: 'greeting',
 
     entryPoints: [
       {
-        condition: { type: 'questStageAtLeast', questId: 'lost_relic', stage: 'relic_found' },
-        node: 'relic_returned'
-      },
-      {
-        condition: { type: 'questActive', questId: 'lost_relic' },
-        node: 'still_looking'
+        condition: { type: 'questActive', questId: 'eadric_heirlooms' },
+        node: 'checking_progress'
       }
     ],
 
     nodes: {
       greeting: {
         speaker: 'Eadric the Withered',
-        text: "Ah… a traveller. You see it too, don't you? The fracture in the sky.",
+        text: "Ah, a traveller. Forgive an old man's clutter — I've lost pieces of my family scattered further than my legs can carry me now.",
         choices: [
-          { text: 'What fracture?', next: 'explain_fracture' },
-          { text: "I don't have time for this.", next: 'dismiss' }
+          { text: 'What have you lost?', next: 'explain' },
+          { text: 'Not my concern.', next: 'dismiss' }
         ]
       },
 
-      explain_fracture: {
+      explain: {
         speaker: 'Eadric the Withered',
-        text: 'The Cloud. It eats memory, leaves only static. Seven clues remain.',
-        choices: [{ text: 'Seven clues?', next: 'clues_intro' }]
-      },
-
-      clues_intro: {
-        speaker: 'Eadric the Withered',
-        text: "Scattered across worlds. Find the relic first. It anchors what's left.",
+        text: 'Three keepsakes: a carved stone, a tarnished locket, and a cracked old pipe. Nothing grand. Just... mine.',
         choices: [
           {
-            text: 'Where is the relic?',
-            next: 'relic_hint',
-            effects: [{ type: 'startQuest', questId: 'lost_relic' }]
+            text: "I'll look for them.",
+            next: 'end',
+            effects: [{ type: 'startQuest', questId: 'eadric_heirlooms' }]
           }
         ]
-      },
-
-      relic_hint: {
-        speaker: 'Eadric the Withered',
-        text: 'In the marsh, where the river forgets which way is down.',
-        choices: [{ text: "I'll find it.", next: 'end' }]
       },
 
       dismiss: {
         speaker: 'Eadric the Withered',
-        text: 'Then the static will take you too. It always does.',
+        text: "No matter. They're only things, in the end.",
         choices: [{ text: 'Leave', next: 'end' }]
       },
 
-      still_looking: {
+      checking_progress: {
         speaker: 'Eadric the Withered',
-        text: 'Still searching? The marsh keeps its secrets close.',
-        choices: [
-          {
-            text: 'I have the relic.',
-            next: 'relic_returned',
-            condition: { type: 'hasItem', itemId: 'lost_relic' },
-            effects: [{ type: 'setQuestStage', questId: 'lost_relic', stage: 'relic_found' }]
-          },
-          { text: 'Still looking.', next: 'end' }
-        ]
-      },
+        text: (state) => {
+          const flags = ['eadric_returned_relic', 'eadric_returned_locket', 'eadric_returned_pipe']
+          const count = flags.filter(f => state.flags[f]).length
 
-      relic_returned: {
-        speaker: 'Eadric the Withered',
-        text: 'You found it. The static dims, if only a little. My thanks.',
+          if (state.flags.eadric_book_given) {
+            return 'The book is yours now. Read it well — it holds more truth than I ever managed to tell.'
+          }
+          if (count >= 3) {
+            return "All three, back where they belong. You've done an old man a kindness he didn't expect."
+          }
+          if (count === 0) {
+            return 'Still nothing? No matter. Take your time.'
+          }
+          return `${3 - count} keepsake${3 - count === 1 ? '' : 's'} left to find, by my count.`
+        },
         choices: [
           {
-            text: 'Farewell.',
+            text: 'Here is the carved stone.',
+            next: 'checking_progress',
+            condition: { type: 'hasItem', itemId: 'lost_relic' },
+            effects: [
+              { type: 'removeItem', itemId: 'lost_relic' },
+              { type: 'setFlag', key: 'eadric_returned_relic' }
+            ]
+          },
+          {
+            text: 'Here is the locket.',
+            next: 'checking_progress',
+            condition: { type: 'hasItem', itemId: 'eadric_locket' },
+            effects: [
+              { type: 'removeItem', itemId: 'eadric_locket' },
+              { type: 'setFlag', key: 'eadric_returned_locket' }
+            ]
+          },
+          {
+            text: 'Here is the pipe.',
+            next: 'checking_progress',
+            condition: { type: 'hasItem', itemId: 'eadric_pipe' },
+            effects: [
+              { type: 'removeItem', itemId: 'eadric_pipe' },
+              { type: 'setFlag', key: 'eadric_returned_pipe' }
+            ]
+          },
+          {
+            text: 'Thank you, Eadric.',
             next: 'end',
-            effects: [{ type: 'completeQuest', questId: 'lost_relic' }]
-          }
+            condition: {
+              type: 'and',
+              conditions: [
+                {
+                  type: 'flagCountAtLeast',
+                  keys: ['eadric_returned_relic', 'eadric_returned_locket', 'eadric_returned_pipe'],
+                  count: 3
+                },
+                { type: 'not', condition: { type: 'flag', key: 'eadric_book_given' } }
+              ]
+            },
+            effects: [
+              { type: 'giveItem', itemId: 'old_book' },
+              { type: 'setFlag', key: 'eadric_book_given' },
+              { type: 'completeQuest', questId: 'eadric_heirlooms' }
+            ]
+          },
+          { text: 'Still searching.', next: 'end' }
         ]
       },
 

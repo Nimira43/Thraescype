@@ -416,7 +416,9 @@ export default function Game() {
               let style
 
               if (cell.entity?.kind === 'npc') cls += ' has-npc'
-              if (cell.entity?.kind === 'item') cls += ' has-item'
+              if (cell.entity?.kind === 'item') {
+                cls += ITEMS[cell.entity.id]?.questItem ? ' has-quest-item' : ' has-item'
+              }
 
               if (boarCells.has(`${x},${y}`)) {
                 cls += ' has-boar'

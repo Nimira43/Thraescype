@@ -2,19 +2,16 @@ import { registerQuests } from '../engine/gamebook'
 
 export const QUESTS_DATA = [
   {
-    id: 'lost_relic',
-    name: 'The Lost Relic',
+    id: 'eadric_heirlooms',
+    name: "Eadric's Heirlooms",
     startStage: 'started',
-    stageOrder: ['started', 'relic_found', 'completed'],
+    stageOrder: ['started', 'completed'],
     stages: {
       started: {
-        description: 'Find the relic, said to rest in the marsh.'
-      },
-      relic_found: {
-        description: 'Return the relic to Eadric.'
+        description: 'Eadric has asked you to find three keepsakes lost from his family: a carved stone, a tarnished locket, and a cracked pipe.'
       },
       completed: {
-        description: 'The relic rests with Eadric once more.'
+        description: 'All three keepsakes have been returned to Eadric.'
       }
     }
   }

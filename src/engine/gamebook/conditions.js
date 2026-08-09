@@ -9,6 +9,12 @@ export function evaluateCondition(condition, state) {
     case 'flag':
       return hasFlag(state, condition.key) === (condition.equals ?? true)
 
+    case 'flagCountAtLeast': {
+      const met = condition.keys.filter(key => hasFlag(state, key)).length
+      const needed = condition.count ?? condition.keys.length
+      return met >= needed
+    }
+
     case 'hasItem':
       return hasItem(state, condition.itemId)
 
