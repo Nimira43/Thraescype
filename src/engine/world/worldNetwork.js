@@ -2,6 +2,7 @@ import { generateWorld, WIDTH, HEIGHT } from './worldGenerator'
 import { placeWitchsLair } from './witchsLair'
 import { placeBystanders } from './npcPlacement'
 import { placeEadricQuest } from './eadricPlacement'
+import { placeEverlastingPlant } from './plantPlacement'
 
 export const WORLD_COUNT = 20
 export const PORTALS_PER_WORLD = 3
@@ -62,6 +63,8 @@ export function generateNetwork() {
   placeBystanders(generatedWorlds)
 
   placeEadricQuest(generatedWorlds)
+
+  placeEverlastingPlant(generatedWorlds)
 
   return generatedWorlds
 }

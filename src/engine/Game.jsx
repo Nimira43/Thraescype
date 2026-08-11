@@ -18,7 +18,7 @@ import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-import '../data/quests' 
+import '../data/quests' // side-effect: registers quest definitions
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -91,14 +91,20 @@ export default function Game() {
       world.grid = newGrid
       worlds[worldIndex] = world
 
-      return {
-        ...prev,
-        worlds,
-        player: {
-          ...prev.player,
-          inventory: [...prev.player.inventory, itemId]
+      let player = {
+        ...prev.player,
+        inventory: [...prev.player.inventory, itemId]
+      }
+
+      if (itemId === 'everlasting_plant') {
+        player = {
+          ...player,
+          flags: { ...player.flags, clue_c_found: true },
+          quests: { ...player.quests, clue_c_plant: 'completed' }
         }
       }
+
+      return { ...prev, worlds, player }
     })
 
     setInteraction(null)
@@ -446,7 +452,9 @@ export default function Game() {
       </div>
 
       <div className='side-panel'>
-        <div className='side-title'>Þræscype</div>
+        <div className='side-title'>
+          Þræscype
+        </div>
 
         <div className='info-block'>
           <div>

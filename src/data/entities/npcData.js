@@ -52,5 +52,35 @@ export const NPCS = {
   wynflaed_wild: {
     name: 'Wynflaed the Wild',
     dialogueTreeId: 'wynflaed_wild'
+  },
+
+  osric_watchman: {
+    name: 'Osric the Watchman',
+    dialogueTreeId: 'osric_watchman'
+  },
+
+  the_stele: {
+    name: 'A Weathered Stele',
+    dialogueTreeId: 'stele_encounter'
+  },
+
+  eanflaed_seeker: {
+    name: 'Eanflaed',
+    dialogueTreeId: 'eanflaed_friend'
+  },
+
+  oswald_mad: {
+    name: 'Oswald',
+    dialogueTreeId: 'oswald_mad'
+  },
+
+  ordlaf_silent: {
+    name: 'Ordlaf the Silent',
+    dialogueTreeId: 'ordlaf_silent'
+  },
+
+  ceolwen_merchant: {
+    name: 'Ceolwen the Merchant',
+    dialogueTreeId: 'ceolwen_merchant'
   }
 }

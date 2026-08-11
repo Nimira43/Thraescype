@@ -72,6 +72,14 @@ export const ITEMS = {
     description: 'A coil of rough twine, still strong enough to bind.'
   },
 
+  wooden_stick: {
+    name: 'Polished Wooden Stick',
+    category: 'material',
+    weight: 1,
+    questItem: true,
+    description: 'A smooth, polished stick, worn soft by years of handling. The moment it nears the triangular piece of metal in your pack, the engravings flare with a faint, wordless light.'
+  },
+
   wild_berries: {
     name: 'Wild Berries',
     category: 'food',
@@ -154,5 +162,13 @@ export const ITEMS = {
     category: 'lore',
     weight: 2,
     description: 'A weathered book, its pages soft with handling. It speaks of Arian — general, inventor, and by its own account, a crueler man than history remembers. His Alchemists, it says, were the ones who truly gave his inventions their teeth.'
+  },
+
+  everlasting_plant: {
+    name: 'Everlasting Plant',
+    category: 'plant',
+    weight: 0,
+    questItem: true,
+    description: 'A pale, unassuming flower, said to grant everlasting youth to those who eat it and survive its poison. The moment you touch it, the engravings on your piece of metal begin to glow.'
   }
 }

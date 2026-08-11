@@ -2,7 +2,6 @@ export const DIALOGUE_TREES = {
   eadric_heirlooms: {
     id: 'eadric_heirlooms',
     startNode: 'greeting',
-
     entryPoints: [
       {
         condition: { type: 'questActive', questId: 'eadric_heirlooms' },
@@ -156,6 +155,19 @@ export const DIALOGUE_TREES = {
   cenric_the_wary: {
     id: 'cenric_the_wary',
     startNode: 'greeting',
+    entryPoints: [
+      {
+        condition: {
+          type: 'and',
+          conditions: [
+            { type: 'questActive', questId: 'clue_b_friend' },
+            { type: 'not', condition: { type: 'flag', key: 'clue_b_cenric_found' } }
+          ]
+        },
+        node: 'found_by_eanflaed'
+      }
+    ],
+
     nodes: {
       greeting: {
         speaker: 'Cenric the Wary',
@@ -174,6 +186,17 @@ export const DIALOGUE_TREES = {
         speaker: 'Cenric the Wary',
         text: 'So did the last one who said that.',
         choices: [{ text: 'Leave', next: 'end' }]
+      },
+      found_by_eanflaed: {
+        speaker: 'Cenric the Wary',
+        text: "You've been sent looking for me, I take it. Tell Eanflaed I'm still breathing — just needed the quiet.",
+        choices: [
+          {
+            text: 'I will.',
+            next: 'end',
+            effects: [{ type: 'setFlag', key: 'clue_b_cenric_found' }]
+          }
+        ]
       },
       end: { text: '…', choices: [] }
     }
@@ -213,8 +236,8 @@ export const DIALOGUE_TREES = {
         speaker: 'Ealdred the Elder',
         text: 'They say the witch was born a thousand years gone. Before the Empire. Before Triana. Before any of us.',
         choices: [
-          { text: 'Is that true?', next: 'explain' },
-          { text: "I don't believe old wives' tales.", next: 'dismiss' }
+          { text: 'Is that true?', next: 'explain', effects: [{ type: 'setFlag', key: 'heard_raevanna_ealdred' }] },
+          { text: "I don't believe old wives' tales.", next: 'dismiss', effects: [{ type: 'setFlag', key: 'heard_raevanna_ealdred' }] }
         ]
       },
       explain: {
@@ -341,6 +364,246 @@ export const DIALOGUE_TREES = {
         dismiss: {
           speaker: 'Wynflaed the Wild',
           text: "None of us are, out here. At least I know it.",
+          choices: [{ text: 'Leave', next: 'end' }]
+        },
+        end: { text: '…', choices: [] }
+      }
+    },
+
+    osric_watchman: {
+      id: 'osric_watchman',
+      startNode: 'greeting',
+      entryPoints: [
+        { condition: { type: 'flag', key: 'clue_a_found' }, node: 'after_found' },
+        { condition: { type: 'questActive', questId: 'clue_a_stele' }, node: 'reminder' }
+      ],
+      nodes: {
+        greeting: {
+          speaker: 'Osric the Watchman',
+          text: "There's a stele out there, somewhere in these worlds. Marked stone, strange lines cut deep. I've seen it myself, once.",
+          choices: [
+            { text: 'Tell me more.', next: 'offer' },
+            { text: 'Not interested.', next: 'dismiss' }
+          ]
+        },
+        offer: {
+          speaker: 'Osric the Watchman',
+          text: "I don't know what the marks mean. Nobody does, far as I've heard. But something cut them, and something meant them.",
+          choices: [
+            {
+              text: 'I will look for it.',
+              next: 'end',
+              effects: [{ type: 'startQuest', questId: 'clue_a_stele' }]
+            }
+          ]
+        },
+        dismiss: {
+          speaker: 'Osric the Watchman',
+          text: "Suit yourself. It'll still be standing whenever you change your mind.",
+          choices: [{ text: 'Leave', next: 'end' }]
+        },
+        reminder: {
+          speaker: 'Osric the Watchman',
+          text: 'Have you found the stele yet? Somewhere out there, marked stone, waiting.',
+          choices: [{ text: 'Still looking.', next: 'end' }]
+        },
+        after_found: {
+          speaker: 'Osric the Watchman',
+          text: 'You found it, then. What did you make of the marks?',
+          choices: [{ text: 'Nothing certain.', next: 'end' }]
+        },
+        end: { text: '…', choices: [] }
+      }
+    },
+
+    stele_encounter: {
+      id: 'stele_encounter',
+      startNode: 'uninformed',
+      entryPoints: [
+        { condition: { type: 'flag', key: 'clue_a_found' }, node: 'already_studied' },
+        { condition: { type: 'questActive', questId: 'clue_a_stele' }, node: 'examine' }
+      ],
+      nodes: {
+        uninformed: {
+          text: "Faded lines cut deep into weathered stone. Meaningless, to eyes that don't know to look.",
+          choices: [{ text: 'Leave', next: 'end' }]
+        },
+        examine: {
+          text: 'The stele. Osric spoke true — the marks are real. You trace them, though their meaning stays just out of reach.',
+          choices: [
+            {
+              text: 'Study it closely.',
+              next: 'end',
+              effects: [
+                { type: 'setFlag', key: 'clue_a_found' },
+                { type: 'completeQuest', questId: 'clue_a_stele' }
+              ]
+            }
+          ]
+        },
+        already_studied: {
+          text: 'The stele stands as before, its marks unchanged since last you looked.',
+          choices: [{ text: 'Leave', next: 'end' }]
+        },
+        end: { text: '…', choices: [] }
+      }
+    },
+
+    eanflaed_friend: {
+      id: 'eanflaed_friend',
+      startNode: 'greeting',
+      entryPoints: [
+        {
+          condition: {
+            type: 'and',
+            conditions: [
+              { type: 'flag', key: 'clue_b_cenric_found' },
+              { type: 'not', condition: { type: 'flag', key: 'clue_b_rewarded' } }
+            ]
+          },
+          node: 'reward'
+        },
+        { condition: { type: 'flag', key: 'clue_b_rewarded' }, node: 'thanks_done' },
+        { condition: { type: 'questActive', questId: 'clue_b_friend' }, node: 'reminder' }
+      ],
+      nodes: {
+        greeting: {
+          speaker: 'Eanflaed',
+          text: "Have you seen a man out here? Wary sort, doesn't talk much unless spoken to first. My friend. I fear something's happened to him.",
+          choices: [
+            {
+              text: 'I will look for him.',
+              next: 'end',
+              effects: [{ type: 'startQuest', questId: 'clue_b_friend' }]
+            },
+            { text: 'Not my concern.', next: 'dismiss' }
+          ]
+        },
+        dismiss: {
+          speaker: 'Eanflaed',
+          text: "Please. If you change your mind.",
+          choices: [{ text: 'Leave', next: 'end' }]
+        },
+        reminder: {
+          speaker: 'Eanflaed',
+          text: 'Any sign of him? Wary, keeps to quiet corners. Please, if you find him...',
+          choices: [{ text: 'Still looking.', next: 'end' }]
+        },
+        reward: {
+          speaker: 'Eanflaed',
+          text: "You found him — truly? Thank you. I can't tell you what that means. Here, please, take this — it's not much, but it's yours.",
+          choices: [
+            {
+              text: 'Glad to help.',
+              next: 'end',
+              effects: [
+                { type: 'giveItem', itemId: 'wooden_stick' },
+                { type: 'setFlag', key: 'clue_b_rewarded' },
+                { type: 'completeQuest', questId: 'clue_b_friend' }
+              ]
+            }
+          ]
+        },
+        thanks_done: {
+          speaker: 'Eanflaed',
+          text: 'Thank you again, traveller. I owe you more than that stick was worth.',
+          choices: [{ text: 'Farewell.', next: 'end' }]
+        },
+        end: { text: '…', choices: [] }
+      }
+    },
+
+    oswald_mad: {
+      id: 'oswald_mad',
+      startNode: 'greeting',
+      entryPoints: [
+        { condition: { type: 'flag', key: 'clue_c_found' }, node: 'vindicated' },
+        { condition: { type: 'questActive', questId: 'clue_c_plant' }, node: 'reminder' }
+      ],
+      nodes: {
+        greeting: {
+          speaker: 'Oswald',
+          text: "You! Yes, you! Listen — there's a plant, up in the hills, that once gave men everlasting youth. Eat it, survive the poison, and you'll never age a day more!",
+          choices: [
+            { text: 'That sounds mad.', next: 'mad_response' },
+            {
+              text: "I'll find it.",
+              next: 'end',
+              effects: [{ type: 'startQuest', questId: 'clue_c_plant' }]
+            }
+          ]
+        },
+        mad_response: {
+          speaker: 'Oswald',
+          text: "Mad? MAD? I've seen it grow with my own eyes! Once. Maybe twice. Find it, and you'll see I'm not so mad after all.",
+          choices: [
+            {
+              text: '...Fine, I will look.',
+              next: 'end',
+              effects: [{ type: 'startQuest', questId: 'clue_c_plant' }]
+            }
+          ]
+        },
+        reminder: {
+          speaker: 'Oswald',
+          text: 'Well? Have you found it yet? The hills, I said! The HILLS!',
+          choices: [{ text: 'Still looking.', next: 'end' }]
+        },
+        vindicated: {
+          speaker: 'Oswald',
+          text: "You found it, didn't you? I TOLD you I wasn't mad! ...wasn't I right?",
+          choices: [{ text: 'You were right, Oswald.', next: 'end' }]
+        },
+        end: { text: '…', choices: [] }
+      }
+    },
+
+    ordlaf_silent: {
+      id: 'ordlaf_silent',
+      startNode: 'greeting',
+      nodes: {
+        greeting: {
+          speaker: 'Ordlaf the Silent',
+          text: "There's a woman up in the peaks who was there before the fracture. Older than the Empire itself, they say.",
+          choices: [
+            { text: 'You believe that?', next: 'explain', effects: [{ type: 'setFlag', key: 'heard_raevanna_ordlaf' }] },
+            { text: 'Everyone has a story.', next: 'dismiss', effects: [{ type: 'setFlag', key: 'heard_raevanna_ordlaf' }] }
+          ]
+        },
+        explain: {
+          speaker: 'Ordlaf the Silent',
+          text: "I believe what I've seen. I've not seen her. But I've seen the mountain ring, and I've not gone closer.",
+          choices: [{ text: 'Fair enough.', next: 'end' }]
+        },
+        dismiss: {
+          speaker: 'Ordlaf the Silent',
+          text: "This one's mine, for what it's worth.",
+          choices: [{ text: 'Leave', next: 'end' }]
+        },
+        end: { text: '…', choices: [] }
+      }
+    },
+
+    ceolwen_merchant: {
+      id: 'ceolwen_merchant',
+      startNode: 'greeting',
+      nodes: {
+        greeting: {
+          speaker: 'Ceolwen the Merchant',
+          text: "Careful near the mountain ring, traveller. The witch doesn't take kindly to visitors. Or so the survivors say — the ones who came back, anyway.",
+          choices: [
+            { text: 'Have you met her?', next: 'explain', effects: [{ type: 'setFlag', key: 'heard_raevanna_ceolwen' }] },
+            { text: "I'll trade elsewhere, then.", next: 'dismiss', effects: [{ type: 'setFlag', key: 'heard_raevanna_ceolwen' }] }
+          ]
+        },
+        explain: {
+          speaker: 'Ceolwen the Merchant',
+          text: "Me? No. I sell things, I don't go looking for trouble. But I've heard enough tales to know where not to walk.",
+          choices: [{ text: 'Noted.', next: 'end' }]
+        },
+        dismiss: {
+          speaker: 'Ceolwen the Merchant',
+          text: 'Wise. Mind the mountains all the same.',
           choices: [{ text: 'Leave', next: 'end' }]
         },
         end: { text: '…', choices: [] }
