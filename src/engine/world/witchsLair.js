@@ -1,4 +1,7 @@
+import { placeNPC } from './worldGenerator'
+
 const LAIR_SIZE = 8
+const RAEVANNA_OFFSET = { dx: 4, dy: 4 }
 
 function pickInteriorTerrain() {
   return Math.random() < 0.5 ? 'forest' : 'swamp'
@@ -63,11 +66,10 @@ export function placeWitchsLair(world, worldWidth, worldHeight, maxAttempts = 20
     x: anchorX,
     y: anchorY,
     size: LAIR_SIZE,
-    entrance: {
-      x: anchorX + gap.dx,
-      y: anchorY + gap.dy
-    }
+    entrance: { x: anchorX + gap.dx, y: anchorY + gap.dy }
   }
+
+  placeNPC(world, 'raevanna', anchorX + RAEVANNA_OFFSET.dx, anchorY + RAEVANNA_OFFSET.dy)
 
   return world
 }
