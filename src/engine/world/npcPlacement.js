@@ -16,7 +16,8 @@ const BYSTANDER_IDS = [
   'eanflaed_seeker',
   'oswald_mad',
   'ordlaf_silent',
-  'ceolwen_merchant'
+  'ceolwen_merchant',
+  'aethelflaed_storyteller'
 ]
 
 const AVOID_TERRAIN = ['water', 'deepwater', 'portal', 'mountain']
@@ -39,7 +40,7 @@ export function placeBystanders(worlds) {
   BYSTANDER_IDS.forEach(npcId => {
     const world = worlds[Math.floor(Math.random() * worlds.length)]
     const tile = findQualifyingTile(world)
-    if (!tile) return 
+    if (!tile) return // couldn't find a clean spot — this one just doesn't appear this game
 
     placeNPC(world, npcId, tile.x, tile.y)
   })

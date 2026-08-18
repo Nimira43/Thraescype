@@ -10,14 +10,8 @@ export default function InteractionModal({ data, onClose }) {
     return (
       <div className='modal-overlay'>
         <div className='modal-box'>
-          {view.speaker && (
-            <div className='modal-speaker'>
-              {view.speaker}
-            </div>
-          )}
-          <p className='modal-text'>
-            {view.text}
-          </p>
+          {view.speaker && <div className='modal-speaker'>{view.speaker}</div>}
+          <p className='modal-text'>{view.text}</p>
           <div className='modal-choices'>
             {view.choices.map((choice) => (
               <button
@@ -29,10 +23,7 @@ export default function InteractionModal({ data, onClose }) {
               </button>
             ))}
             {view.isEnd && (
-              <button
-                className='modal-btn'
-                onClick={onClose}
-              >
+              <button className='modal-btn' onClick={onClose}>
                 Close
               </button>
             )}
@@ -48,20 +39,30 @@ export default function InteractionModal({ data, onClose }) {
         <div className='modal-box'>
           <Item item={data.item} />
           {data.overweight && (
-            <p className='modal-warning'>
-              Too heavy to carry.
-            </p>
+            <p className='modal-warning'>Too heavy to carry.</p>
           )}
           <div className='modal-choices'>
             {data.choices.map((choice, idx) => (
-              <button
-                key={idx}
-                className='modal-btn'
-                onClick={choice.action}
-              >
+              <button key={idx} className='modal-btn' onClick={choice.action}>
                 {choice.label}
               </button>
             ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (data.type === 'message') {
+    return (
+      <div className='modal-overlay'>
+        <div className='modal-box'>
+          {data.title && <div className='modal-speaker'>{data.title}</div>}
+          <p className='modal-text'>{data.text}</p>
+          <div className='modal-choices'>
+            <button className='modal-btn' onClick={onClose}>
+              Close
+            </button>
           </div>
         </div>
       </div>
@@ -82,24 +83,45 @@ export default function InteractionModal({ data, onClose }) {
             </p>
           )}
 
+          {data.combineMode && (
+            <p className='inventory-empty'>Select items to combine.</p>
+          )}
+
           <div className='modal-choices modal-choices-scroll'>
-            {data.items.map((itemId, idx) => (
-              <button
-                key={`${itemId}-${idx}`}
-                className='modal-btn'
-                onClick={() => data.onSelect(itemId, idx)}
-              >
-                {ITEMS[itemId]?.name || itemId}
-              </button>
-            ))}
+            {data.items.map((itemId, idx) => {
+              const isSelected = data.combineMode && data.selectedIndices.includes(idx)
+              return (
+                <button
+                  key={`${itemId}-${idx}`}
+                  className={`modal-btn${isSelected ? ' modal-btn-selected' : ''}`}
+                  onClick={() => data.onSelect(itemId, idx)}
+                >
+                  {ITEMS[itemId]?.name || itemId}
+                </button>
+              )
+            })}
           </div>
 
-          <button
-            className='modal-btn modal-btn-close'
-            onClick={onClose}
-          >
-            Close
-          </button>
+          <div className='modal-choices'>
+            {data.combineMode ? (
+              <>
+                <button className='modal-btn' onClick={data.onCombine}>
+                  Combine Selected
+                </button>
+                <button className='modal-btn' onClick={data.onToggleCombineMode}>
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button className='modal-btn' onClick={data.onToggleCombineMode}>
+                Combine Items
+              </button>
+            )}
+
+            <button className='modal-btn modal-btn-close' onClick={onClose}>
+              Close
+            </button>
+          </div>
         </div>
       </div>
     )

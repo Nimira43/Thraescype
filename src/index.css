@@ -178,6 +178,7 @@ body {
   font-size: 22px;
   margin-bottom: 20px;
   line-height: 1.4;
+  white-space: pre-line;
 }
 
 .modal-btn {
@@ -200,6 +201,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.modal-btn-selected {
+  background: var(--grey-1);
+  border-color: var(--light);
+  color: var(--light);
 }
 
 .npc-box,

@@ -1,4 +1,5 @@
 export const ITEMS = {
+
   lost_relic: {
     name: 'Ancient Relic',
     category: 'relic',
@@ -78,6 +79,22 @@ export const ITEMS = {
     weight: 1,
     questItem: true,
     description: 'A smooth, polished stick, worn soft by years of handling. The moment it nears the triangular piece of metal in your pack, the engravings flare with a faint, wordless light.'
+  },
+
+  wooden_codex: {
+    name: 'Wooden Codex',
+    category: 'material',
+    weight: 1,
+    questItem: true,
+    description: 'The polished stick is gone — in its place, a cylinder of dark, grained wood, ringed with dials carved in strange letters. They match the marks on your piece of metal exactly.'
+  },
+
+  vellum_parchment: {
+    name: 'Vellum Parchment',
+    category: 'lore',
+    weight: 0,
+    questItem: true,
+    description: 'A brittle sheet of vellum, marked with strange writing. Something about it feels familiar — the same hand, you\'re almost certain, that carved the stele.'
   },
 
   wild_berries: {

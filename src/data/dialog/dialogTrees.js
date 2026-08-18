@@ -2,6 +2,7 @@ export const DIALOGUE_TREES = {
   eadric_heirlooms: {
     id: 'eadric_heirlooms',
     startNode: 'greeting',
+
     entryPoints: [
       {
         condition: { type: 'questActive', questId: 'eadric_heirlooms' },
@@ -84,7 +85,7 @@ export const DIALOGUE_TREES = {
           },
           {
             text: 'Thank you, Eadric.',
-            next: 'end',
+            next: 'give_book',
             condition: {
               type: 'and',
               conditions: [
@@ -95,14 +96,25 @@ export const DIALOGUE_TREES = {
                 },
                 { type: 'not', condition: { type: 'flag', key: 'eadric_book_given' } }
               ]
-            },
+            }
+          },
+          { text: 'Still searching.', next: 'end' }
+        ]
+      },
+
+      give_book: {
+        speaker: 'Eadric the Withered',
+        text: "Ah — that's the last of them, then. There's one more thing, before you go. I came across an old book once, wandering these fractured worlds. Already read it, cover to cover. No use to an old man who's already forgotten more than it can teach him. Take it, if you'd like.",
+        choices: [
+          {
+            text: 'Thank you.',
+            next: 'end',
             effects: [
               { type: 'giveItem', itemId: 'old_book' },
               { type: 'setFlag', key: 'eadric_book_given' },
               { type: 'completeQuest', questId: 'eadric_heirlooms' }
             ]
-          },
-          { text: 'Still searching.', next: 'end' }
+          }
         ]
       },
 
@@ -155,7 +167,7 @@ export const DIALOGUE_TREES = {
   cenric_the_wary: {
     id: 'cenric_the_wary',
     startNode: 'greeting',
-
+    
     entryPoints: [
       {
         condition: {
@@ -228,7 +240,6 @@ export const DIALOGUE_TREES = {
       end: { text: '…', choices: [] }
     }
   },
-
 
   ealdred_elder: {
     id: 'ealdred_elder',
@@ -313,8 +324,7 @@ export const DIALOGUE_TREES = {
       explain: {
         speaker: 'Hilda the Devout',
         text: "For the bomb. For the Emperor's pride. For all of it. It watches, and one day it will decide we've suffered enough — or that we haven't.",
-        choices: [{
-          text: "I hope you're wrong.", next: 'end' }]
+        choices: [{ text: "I hope you're wrong.", next: 'end' }]
       },
       dismiss: {
         speaker: 'Hilda the Devout',
@@ -445,6 +455,34 @@ export const DIALOGUE_TREES = {
       },
       already_studied: {
         text: 'The stele stands as before, its marks unchanged since last you looked.',
+        choices: [
+          {
+            text: 'Try the wooden stick.',
+            next: 'stele_no_reaction',
+            condition: {
+              type: 'or',
+              conditions: [
+                { type: 'hasItem', itemId: 'wooden_stick' },
+                { type: 'hasItem', itemId: 'wooden_codex' }
+              ]
+            }
+          },
+          {
+            text: 'Try the everlasting plant.',
+            next: 'stele_no_reaction',
+            condition: { type: 'hasItem', itemId: 'everlasting_plant' }
+          },
+          {
+            text: 'Try the piece of metal.',
+            next: 'stele_no_reaction',
+            condition: { type: 'hasItem', itemId: 'piece_of_metal' }
+          },
+          { text: 'Leave', next: 'end' }
+        ]
+      },
+
+      stele_no_reaction: {
+        text: 'Nothing happens.',
         choices: [{ text: 'Leave', next: 'end' }]
       },
       end: { text: '…', choices: [] }
@@ -744,5 +782,98 @@ export const DIALOGUE_TREES = {
 
       end: { text: '…', choices: [] }
     }
+  },
+
+  cloud_encounter: {
+    id: 'cloud_encounter',
+    startNode: 'approach',
+    entryPoints: [
+      { condition: { type: 'flag', key: 'cloud_first_encounter_done' }, node: 'revisit' }
+    ],
+    nodes: {
+      approach: {
+        text: "The Cloud hangs close, static crackling faintly at its edge. It doesn't retreat.",
+        choices: [
+          { text: 'Are you Aries?', next: 'how_do_you_know' },
+          { text: 'Leave it be.', next: 'end' }
+        ]
+      },
+      how_do_you_know: {
+        speaker: 'The Cloud',
+        text: 'How do you know that name?',
+        choices: [{ text: 'Raevanna told me.', next: 'knows_raevanna' }]
+      },
+      knows_raevanna: {
+        speaker: 'The Cloud',
+        text: 'Raevanna. Yes — I know her. She was there, same as I. Then you know what I am, if she named me true.',
+        choices: [{ text: 'What are you watching for?', next: 'watching_for' }]
+      },
+      watching_for: {
+        speaker: 'The Cloud',
+        text: 'Arian. Or what remains of his Alchemists — any who had a hand in what was done here. I have watched every world since. I will know them, if they return.',
+        choices: [{ text: 'What will you do, when they do?', next: 'unanswered' }]
+      },
+      unanswered: {
+        speaker: 'The Cloud',
+        text: 'The Cloud does not answer. Not yet.',
+        choices: [
+          {
+            text: 'Leave',
+            next: 'end',
+            effects: [{ type: 'setFlag', key: 'cloud_first_encounter_done' }]
+          }
+        ]
+      },
+      revisit: {
+        speaker: 'The Cloud',
+        text: 'It watches still. It has not answered your question. Perhaps it cannot, yet.',
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+      end: { text: '…', choices: [] }
+    }
+  },
+
+  aethelflaed_storyteller: {
+    id: 'aethelflaed_storyteller',
+    startNode: 'greeting',
+    entryPoints: [
+      { condition: { type: 'hasItem', itemId: 'old_book' }, node: 'notices_book' }
+    ],
+    nodes: {
+      greeting: {
+        speaker: 'Aethelflaed',
+        text: 'Stories, traveller — do you know any? I collect them, the way some collect coins.',
+        choices: [
+          { text: 'I have none worth telling.', next: 'end' },
+          { text: 'Perhaps another time.', next: 'end' }
+        ]
+      },
+      notices_book: {
+        speaker: 'Aethelflaed',
+        text: 'Is that a book you carry? I love stories — would you read to me?',
+        choices: [
+          { text: 'Of course.', next: 'family_story' },
+          { text: 'Not now.', next: 'end' }
+        ]
+      },
+      family_story: {
+        speaker: 'Aethelflaed',
+        text: 'My father told me once that our family descends from one of the mages of the Alchemists. He said they sought something called Þræscype.',
+        choices: [{ text: 'What is Þræscype?', next: 'unknown' }]
+      },
+      unknown: {
+        speaker: 'Aethelflaed',
+        text: "I don't know. Treasure, maybe? He never said, and I never asked enough before he was gone.",
+        choices: [
+          {
+            text: '…',
+            next: 'end',
+            effects: [{ type: 'setFlag', key: 'heard_thraescype' }]
+          }
+        ]
+      },
+      end: { text: '…', choices: [] }
+    }
   }
 }
+

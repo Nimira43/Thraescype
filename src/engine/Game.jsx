@@ -5,6 +5,7 @@ import { createCloud, stepCloud, getCloudCells } from '../engine/world/cloudSyst
 import { stepBoars } from '../engine/world/boarSystem'
 import { saveGame, loadGame, clearGame } from './save/storage'
 import { getTotalWeight, getCapacity, canCarry } from './inventory/weight'
+import { findRecipe } from './inventory/recipes'
 import {
   STAMINA_MAX,
   CONSTITUTION_MAX,
@@ -19,7 +20,6 @@ import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
 import '../data/quests' // side-effect: registers quest definitions
-import BackgroundMusic from '../components/BackgroundMusic'
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -51,6 +51,21 @@ function terrainLabel(t) {
     case 'deepwater': return 'Deep Water'
     case 'portal': return 'Portal'
     default: return `Unknown (${t})`
+  }
+}
+
+function maybeTransformStick(player) {
+  if (player.flags.stick_transformed) return player
+  if (!player.flags.book_read) return player
+  if (!player.inventory.includes('wooden_stick')) return player
+
+  const inventory = [...player.inventory]
+  inventory[inventory.indexOf('wooden_stick')] = 'wooden_codex'
+
+  return {
+    ...player,
+    inventory,
+    flags: { ...player.flags, stick_transformed: true }
   }
 }
 
@@ -141,6 +156,65 @@ export default function Game() {
     setInteraction(null)
   }
 
+  function readBook(itemId) {
+    if (itemId !== 'old_book') return
+
+    const alreadyTransformed = game.player.flags.stick_transformed
+    const hasStick = game.player.inventory.includes('wooden_stick')
+    const willTransform = !alreadyTransformed && hasStick
+
+    setGame(prev => {
+      const player = maybeTransformStick({
+        ...prev.player,
+        flags: { ...prev.player.flags, book_read: true }
+      })
+      return { ...prev, player }
+    })
+
+    const closingLine = willTransform
+      ? "\n\nThe moment you read her name, the polished stick in your pack judders — wood splitting open along hidden seams, engravings surfacing where none were carved before. It isn't a stick anymore."
+      : ''
+
+    setInteraction({
+      type: 'message',
+      title: 'Old Book',
+      text: "The pages are dense, hurried in places, as if written in secret. It speaks of Arian — a general as brilliant as he was cruel, who gathered the brightest minds and mages of the Empire into a single order: the Alchemists. It was they who forged the Firia weapons, missile and bomb alike, at Arian's word. One name recurs more than any other in these pages — a scientist who worked closest of all beside him.\n\nRylaine." + closingLine
+    })
+  }
+
+  function attemptCombine(selectedIndices) {
+    if (selectedIndices.length < 2) {
+      setInteraction({ type: 'message', text: 'Select at least two items to combine.' })
+      return
+    }
+
+    const inventory = game.player.inventory
+    const selectedIds = selectedIndices.map(i => inventory[i])
+    const recipe = findRecipe(selectedIds)
+
+    if (!recipe) {
+      setInteraction({ type: 'message', text: "Nothing happens. These don't seem to belong together." })
+      return
+    }
+
+    setGame(prev => {
+      const keepSet = new Set(recipe.keep || [])
+      const newInventory = [...prev.player.inventory]
+
+      const indicesToRemove = selectedIndices
+        .filter(i => !keepSet.has(newInventory[i]))
+        .sort((a, b) => b - a)
+
+      indicesToRemove.forEach(i => newInventory.splice(i, 1))
+      newInventory.push(recipe.result)
+
+      return { ...prev, player: { ...prev.player, inventory: newInventory } }
+    })
+
+    setInteraction({ type: 'message', text: recipe.narrative })
+  }
+
+
   function viewInventoryItem(itemId, index) {
     const item = ITEMS[itemId]
     if (!item) return
@@ -151,6 +225,10 @@ export default function Game() {
       choices.push({ label: 'Consume', action: () => consumeItem(itemId, index) })
     }
 
+    if (item.category === 'lore') {
+      choices.push({ label: 'Read', action: () => readBook(itemId) })
+    }
+
     choices.push(
       { label: 'Drop', action: () => dropItem(index) },
       { label: 'Close', action: () => setInteraction(null) }
@@ -159,12 +237,31 @@ export default function Game() {
     setInteraction({ type: 'item', item, choices })
   }
 
-  function openInventory() {
+  function showInventory({ combineMode, selectedIndices }) {
     setInteraction({
       type: 'inventory',
       items: game.player.inventory,
-      onSelect: (itemId, idx) => viewInventoryItem(itemId, idx)
+      combineMode,
+      selectedIndices,
+      onSelect: (itemId, idx) => {
+        if (combineMode) {
+          const nextSelected = selectedIndices.includes(idx)
+            ? selectedIndices.filter(i => i !== idx)
+            : [...selectedIndices, idx]
+          showInventory({ combineMode, selectedIndices: nextSelected })
+        } else {
+          viewInventoryItem(itemId, idx)
+        }
+      },
+      onToggleCombineMode: () => {
+        showInventory({ combineMode: !combineMode, selectedIndices: [] })
+      },
+      onCombine: () => attemptCombine(selectedIndices)
     })
+  }
+
+  function openInventory() {
+    showInventory({ combineMode: false, selectedIndices: [] })
   }
 
   function huntBoar(boarId) {
@@ -201,6 +298,38 @@ export default function Game() {
     })
   }
 
+  function handleCloudEncounter(playerState) {
+    const tree = DIALOGUE_TREES['cloud_encounter']
+    if (!tree) return
+
+    const showDialogue = (view, gamebookState) => {
+      if (!view) { setInteraction(null); return }
+
+      setInteraction({
+        type: 'dialogue',
+        view,
+        onChoice: (choiceIdx) => {
+          const result = chooseDialogueOption(tree, gamebookState, view.nodeId, choiceIdx)
+
+          setGame(prev => ({
+            ...prev,
+            player: maybeTransformStick({ ...prev.player, ...result.state })
+          }))
+
+          if (result.isEnd || !result.view) {
+            setInteraction(null)
+            return
+          }
+
+          showDialogue(result.view, result.state)
+        }
+      })
+    }
+
+    const { view, state } = startDialogue(tree, playerState)
+    showDialogue(view, state)
+  }
+
   function handleInteraction(entity, x, y, playerState) {
     if (!entity) return
 
@@ -220,7 +349,7 @@ export default function Game() {
 
             setGame(prev => ({
               ...prev,
-              player: { ...prev.player, ...result.state }
+              player: maybeTransformStick({ ...prev.player, ...result.state })
             }))
 
             if (result.isEnd || !result.view) {
@@ -267,6 +396,7 @@ export default function Game() {
 
     function handleKey(e) {
       if (e.repeat) return
+
       if (interaction?.type === 'dialogue') return
 
       setGame(prev => {
@@ -309,6 +439,15 @@ export default function Game() {
           }
         }
 
+        if (
+          player.flags.cloud_is_aries &&
+          cloud.worldId === currentWorldId &&
+          getCloudCells(cloud).has(`${newX},${newY}`)
+        ) {
+          handleCloudEncounter(player)
+          return prev
+        }
+
         const encounteredBoar = boars.find(
           b => b.worldId === currentWorldId && b.x === newX && b.y === newY
         )
@@ -335,7 +474,7 @@ export default function Game() {
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [interaction, game, boars])
+  }, [interaction, game, boars, cloud])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -408,7 +547,6 @@ export default function Game() {
 
   return (
     <div className='game-root'>
-      <BackgroundMusic />
       <div className='world-area'>
         <div
           ref={gridRef}
