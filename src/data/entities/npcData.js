@@ -92,6 +92,35 @@ export const NPCS = {
   aethelflaed_storyteller: {
     name: 'Aethelflaed',
     dialogueTreeId: 'aethelflaed_storyteller'
+  },
+
+  cuthbert_confused: {
+    name: 'Cuthbert the Confused',
+    dialogueTreeId: 'cuthbert_confused'
+  },
+
+  edith_grieving: {
+    name: 'Edith the Grieving',
+    dialogueTreeId: 'edith_grieving'
+  },
+
+  godric_watchful: {
+    name: 'Godric the Watchful',
+    dialogueTreeId: 'godric_watchful'
+  },
+
+  cyneburg_restless: {
+    name: 'Cyneburg the Restless',
+    dialogueTreeId: 'cyneburg_restless'
+  },
+
+  leofric_dreamer: {
+    name: 'Leofric the Dreamer',
+    dialogueTreeId: 'leofric_dreamer'
+  },
+
+  wulfhild_quiet: {
+    name: 'Wulfhild the Quiet',
+    dialogueTreeId: 'wulfhild_quiet'
   }
 }
-

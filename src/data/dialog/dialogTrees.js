@@ -2,7 +2,6 @@ export const DIALOGUE_TREES = {
   eadric_heirlooms: {
     id: 'eadric_heirlooms',
     startNode: 'greeting',
-
     entryPoints: [
       {
         condition: { type: 'questActive', questId: 'eadric_heirlooms' },
@@ -167,7 +166,6 @@ export const DIALOGUE_TREES = {
   cenric_the_wary: {
     id: 'cenric_the_wary',
     startNode: 'greeting',
-    
     entryPoints: [
       {
         condition: {
@@ -874,6 +872,161 @@ export const DIALOGUE_TREES = {
       },
       end: { text: '…', choices: [] }
     }
+  },
+
+  cuthbert_confused: {
+    id: 'cuthbert_confused',
+    startNode: 'greeting',
+    nodes: {
+      greeting: {
+        speaker: 'Cuthbert the Confused',
+        text: 'I found a door once, in the water. Swore it. Went under, came back with an armful of nothing.',
+        choices: [
+          { text: 'A door in the water?', next: 'explain' },
+          { text: 'That sounds unlikely.', next: 'dismiss' }
+        ]
+      },
+      explain: {
+        speaker: 'Cuthbert the Confused',
+        text: 'Aye. Or maybe it was a fish. Big fish. Silver as a coin. I get the two confused, these days.',
+        choices: [{ text: 'Right...', next: 'end' }]
+      },
+      dismiss: {
+        speaker: 'Cuthbert the Confused',
+        text: "Unlikely's not the same as untrue.",
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+      end: { text: '…', choices: [] }
+    }
+  },
+
+  edith_grieving: {
+    id: 'edith_grieving',
+    startNode: 'greeting',
+    nodes: {
+      greeting: {
+        speaker: 'Edith the Grieving',
+        text: 'I had a sister, once. Before. I don\'t know which world she\'s in now, or if she\'s in any of them at all.',
+        choices: [
+          { text: "I'm sorry.", next: 'explain' },
+          { text: "I don't know what to say.", next: 'dismiss' }
+        ]
+      },
+      explain: {
+        speaker: 'Edith the Grieving',
+        text: "Nothing to be sorry for. You didn't break the sky. I just... talk about her, sometimes. Keeps the shape of her from fading.",
+        choices: [{ text: "That's not nothing.", next: 'end' }]
+      },
+      dismiss: {
+        speaker: 'Edith the Grieving',
+        text: "Nobody does. That's alright too.",
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+      end: { text: '…', choices: [] }
+    }
+  },
+
+  godric_watchful: {
+    id: 'godric_watchful',
+    startNode: 'greeting',
+    nodes: {
+      greeting: {
+        speaker: 'Godric the Watchful',
+        text: 'Twenty worlds, and no two portals ever look quite the same. Have you noticed that?',
+        choices: [
+          { text: 'What do you mean?', next: 'explain' },
+          { text: "Can't say I have.", next: 'dismiss' }
+        ]
+      },
+      explain: {
+        speaker: 'Godric the Watchful',
+        text: "Rings, mostly. But some flicker, some hum, some just... wait. Like they remember being something else, once.",
+        choices: [{ text: 'Interesting.', next: 'end' }]
+      },
+      dismiss: {
+        speaker: 'Godric the Watchful',
+        text: "Start looking. You'll see it.",
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+      end: { text: '…', choices: [] }
+    }
+  },
+
+  cyneburg_restless: {
+    id: 'cyneburg_restless',
+    startNode: 'greeting',
+    nodes: {
+      greeting: {
+        speaker: 'Cyneburg the Restless',
+        text: "Doesn't it frighten you? Twenty worlds, and not one of them whole.",
+        choices: [
+          { text: 'Sometimes.', next: 'explain' },
+          { text: "I've stopped letting it.", next: 'dismiss' }
+        ]
+      },
+      explain: {
+        speaker: 'Cyneburg the Restless',
+        text: "I haven't managed that. Every portal I step through, some part of me expects it to be the last one. That there won't be a next world waiting.",
+        choices: [{ text: 'There always has been, so far.', next: 'end' }]
+      },
+      dismiss: {
+        speaker: 'Cyneburg the Restless',
+        text: 'Teach me how, if you ever work it out.',
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+      end: { text: '…', choices: [] }
+    }
+  },
+
+  leofric_dreamer: {
+    id: 'leofric_dreamer',
+    startNode: 'greeting',
+    nodes: {
+      greeting: {
+        speaker: 'Leofric the Dreamer',
+        text: 'I dreamt the sky was made of paper last night. Woke up and checked. Very disappointing.',
+        choices: [
+          { text: 'You checked?', next: 'explain' },
+          { text: 'You dream strange things.', next: 'dismiss' }
+        ]
+      },
+      explain: {
+        speaker: 'Leofric the Dreamer',
+        text: "Course I checked. Can't trust a sky that's never once told you what it's made of. Still hasn't, mind.",
+        choices: [{ text: 'Fair point, somehow.', next: 'end' }]
+      },
+      dismiss: {
+        speaker: 'Leofric the Dreamer',
+        text: "Everyone does, out here. Yours just haven't caught up yet.",
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+      end: { text: '…', choices: [] }
+    }
+  },
+
+  wulfhild_quiet: {
+    id: 'wulfhild_quiet',
+    startNode: 'greeting',
+    nodes: {
+      greeting: {
+        speaker: 'Wulfhild the Quiet',
+        text: 'The forests remember more than the plains do. You can feel it, if you stand still long enough.',
+        choices: [
+          { text: 'Remember what?', next: 'explain' },
+          { text: "I don't feel anything.", next: 'dismiss' }
+        ]
+      },
+      explain: {
+        speaker: 'Wulfhild the Quiet',
+        text: 'What was here, before. Plains forget easy — nothing to hold the shape of a thing. Forests hold on longer.',
+        choices: [{ text: "I'll stand still, next forest I find.", next: 'end' }]
+      },
+      dismiss: {
+        speaker: 'Wulfhild the Quiet',
+        text: 'Not yet, maybe. Give it time.',
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+      end: { text: '…', choices: [] }
+    }
   }
 }
-
