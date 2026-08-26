@@ -166,6 +166,7 @@ export const DIALOGUE_TREES = {
   cenric_the_wary: {
     id: 'cenric_the_wary',
     startNode: 'greeting',
+
     entryPoints: [
       {
         condition: {
@@ -322,14 +323,15 @@ export const DIALOGUE_TREES = {
       explain: {
         speaker: 'Hilda the Devout',
         text: "For the bomb. For the Emperor's pride. For all of it. It watches, and one day it will decide we've suffered enough — or that we haven't.",
-        choices: [{ text: "I hope you're wrong.", next: 'end' }]
+        choices: [{
+          text: "I hope you're wrong.", next: 'end' }]
       },
-      dismiss: {
-        speaker: 'Hilda the Devout',
-        text: 'Belief was never the requirement. Only its attention.',
-        choices: [{ text: 'Leave', next: 'end' }]
-      },
-      end: { text: '…', choices: [] }
+          dismiss: {
+          speaker: 'Hilda the Devout',
+          text: 'Belief was never the requirement. Only its attention.',
+          choices: [{ text: 'Leave', next: 'end' }]
+        },
+          end: { text: '…', choices: [] }
     }
   },
 
@@ -452,8 +454,22 @@ export const DIALOGUE_TREES = {
         ]
       },
       already_studied: {
-        text: 'The stele stands as before, its marks unchanged since last you looked.',
+        text: (state) => state.flags.clue_f_done
+          ? "The stele's marks feel different now — quieter, somehow. As if they've already told you everything they were going to."
+          : 'The stele stands as before, its marks unchanged since last you looked.',
         choices: [
+          {
+            text: 'Hold the vellum to the stele.',
+            next: 'vellum_translation',
+            condition: {
+              type: 'and',
+              conditions: [
+                { type: 'hasItem', itemId: 'vellum_parchment' },
+                { type: 'flag', key: 'clue_e_done' },
+                { type: 'not', condition: { type: 'flag', key: 'clue_f_done' } }
+              ]
+            }
+          },
           {
             text: 'Try the wooden stick.',
             next: 'stele_no_reaction',
@@ -476,6 +492,17 @@ export const DIALOGUE_TREES = {
             condition: { type: 'hasItem', itemId: 'piece_of_metal' }
           },
           { text: 'Leave', next: 'end' }
+        ]
+      },
+
+      vellum_translation: {
+        text: "You hold the vellum up against the stele. The writing seems to shift, aligning with the carved marks beneath it — and then, impossibly, it translates before your eyes.\n\n'My love, if you read this then our plans have failed and I have perished. The Casting went wrong and Elveria was destroyed and fractured.\n\nArian, the arrogant fool, is slain by my hand. His bones, now rotted away, lie buried beneath your feet where you stand.\n\nSeek out the Everlasting Flower. This marks where I now rest, in the hills.\n\nMy love, it is down to you. Seek Raevanna and give her this parchment and the Everlasting Flower. She will tell you what to do with the Verisible.\n\nI grow weaker, Þræscype. Not long now.\n\nRylaine.'",
+        choices: [
+          {
+            text: 'Þræscype...',
+            next: 'end',
+            effects: [{ type: 'setFlag', key: 'clue_f_done' }]
+          }
         ]
       },
 
@@ -786,6 +813,17 @@ export const DIALOGUE_TREES = {
     id: 'cloud_encounter',
     startNode: 'approach',
     entryPoints: [
+      { condition: { type: 'flag', key: 'clue_e_done' }, node: 'clue_e_revisit' },
+      {
+        condition: {
+          type: 'and',
+          conditions: [
+            { type: 'flag', key: 'heard_thraescype' },
+            { type: 'not', condition: { type: 'flag', key: 'clue_e_done' } }
+          ]
+        },
+        node: 'clue_e_1'
+      },
       { condition: { type: 'flag', key: 'cloud_first_encounter_done' }, node: 'revisit' }
     ],
     nodes: {
@@ -827,6 +865,76 @@ export const DIALOGUE_TREES = {
         text: 'It watches still. It has not answered your question. Perhaps it cannot, yet.',
         choices: [{ text: 'Leave', next: 'end' }]
       },
+
+      clue_e_1: {
+        speaker: 'The Cloud',
+        text: 'I sense something in you, but I do not know you. You are not an Alchemist — this is for sure. I would know this. But. Who are you?',
+        choices: [
+          { text: 'I am searching for those answers, Aries. You were against the Alchemists, were you not?', next: 'clue_e_2' }
+        ]
+      },
+      clue_e_2: {
+        speaker: 'The Cloud',
+        text: 'I was against what my brother did with their power.',
+        choices: [{ text: 'And what are you doing now?', next: 'clue_e_3' }]
+      },
+      clue_e_3: {
+        speaker: 'The Cloud',
+        text: 'I am waiting. For Arian and Rylaine.',
+        choices: [{ text: 'What will you do if you see them again?', next: 'clue_e_4' }]
+      },
+      clue_e_4: {
+        speaker: 'The Cloud',
+        text: "I will strike them down with the power I've been harvesting these past many years.",
+        choices: [{ text: 'Power?', next: 'clue_e_5' }]
+      },
+      clue_e_5: {
+        speaker: 'The Cloud',
+        text: 'I feel it within me. Ironic that I would gain Alchemical powers after the Apocalypse.',
+        choices: [{ text: 'How do you know these powers are Alchemical?', next: 'clue_e_6' }]
+      },
+      clue_e_6: {
+        speaker: 'The Cloud',
+        text: 'How else would I survive?',
+        choices: [{ text: 'Hmm, okay. Who is Rylaine?', next: 'clue_e_7' }]
+      },
+      clue_e_7: {
+        speaker: 'The Cloud',
+        text: 'Rylaine was a powerful Alchemist. She seduced Arian, corrupting him and poisoning his mind. Together they wanted complete dominance. They went too far. They destroyed Elveria.',
+        choices: [{ text: 'Which are now The Fractured Worlds?', next: 'clue_e_8' }]
+      },
+      clue_e_8: {
+        speaker: 'The Cloud',
+        text: 'Precisely.',
+        choices: [{ text: 'And so you wait for them? To finish them off.', next: 'clue_e_9' }]
+      },
+      clue_e_9: {
+        speaker: 'The Cloud',
+        text: 'If they emerge from the Void I will finish them.',
+        choices: [{ text: 'What if they are dead already? During the Apocalypse?', next: 'clue_e_10' }]
+      },
+      clue_e_10: {
+        speaker: 'The Cloud',
+        text: 'Then I shall continue as I am into eternity.',
+        choices: [{ text: "That'll be a long time.", next: 'clue_e_11' }]
+      },
+      clue_e_11: {
+        speaker: 'The Cloud',
+        text: "For sure. Now stranger, I must go. Go and try to find yourself. But be careful finding your answers. I'm watching you.",
+        choices: [
+          {
+            text: 'Farewell.',
+            next: 'end',
+            effects: [{ type: 'setFlag', key: 'clue_e_done' }]
+          }
+        ]
+      },
+      clue_e_revisit: {
+        speaker: 'The Cloud',
+        text: 'It watches still. It has told you what it knows, for now.',
+        choices: [{ text: 'Leave', next: 'end' }]
+      },
+
       end: { text: '…', choices: [] }
     }
   },
