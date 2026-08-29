@@ -19,7 +19,7 @@ import { NPCS } from '../data/entities/npcData'
 import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-import '../data/quests'
+import '../data/quests' 
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -230,6 +230,27 @@ export default function Game() {
     setInteraction({ type: 'message', text: recipe.narrative })
   }
 
+  function eatEverlastingPlant(index) {
+    setGame(prev => {
+      const inventory = [...prev.player.inventory]
+      inventory.splice(index, 1)
+
+      return {
+        ...prev,
+        player: {
+          ...prev.player,
+          inventory,
+          flags: { ...prev.player.flags, thraescype_awakened: true }
+        }
+      }
+    })
+
+    setInteraction({
+      type: 'message',
+      title: 'The Everlasting Flower',
+      text: 'You eat the flower. For a moment, nothing. Then everything.\n\nMemory floods back — not gently, but all at once, a lifetime unspooling behind your eyes faster than you can hold it. Rylaine. The chamber. The bomb. Yourself, as you truly were.\n\nYou remember who you are now.'
+    })
+  }
 
   function viewInventoryItem(itemId, index) {
     const item = ITEMS[itemId]
@@ -239,6 +260,10 @@ export default function Game() {
 
     if (item.restore) {
       choices.push({ label: 'Consume', action: () => consumeItem(itemId, index) })
+    }
+
+    if (itemId === 'everlasting_plant' && game.player.flags.confrontation_done) {
+      choices.push({ label: 'Eat', action: () => eatEverlastingPlant(index) })
     }
 
     if (item.category === 'lore') {
@@ -470,6 +495,7 @@ export default function Game() {
           return prev
         }
 
+        // BOAR ENCOUNTER
         const encounteredBoar = boars.find(
           b => b.worldId === currentWorldId && b.x === newX && b.y === newY
         )
@@ -498,6 +524,7 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [interaction, game, boars, cloud])
 
+  // CLOUD DRIFT
   useEffect(() => {
     const interval = setInterval(() => {
       setCloud(prev => stepCloud(prev, WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
@@ -535,7 +562,6 @@ export default function Game() {
     return () => clearTimeout(timeout)
   }, [game])
 
-  // CAMERA FOLLOW
   useEffect(() => {
     if (!gridRef.current || !game) return
 
@@ -683,6 +709,7 @@ export default function Game() {
 
 
 
+
 // import { useEffect, useRef, useState } from 'react'
 // import { generateNetwork, WORLD_COUNT } from '../engine/world/worldNetwork'
 // import { WIDTH as WORLD_WIDTH, HEIGHT as WORLD_HEIGHT } from '../engine/world/worldGenerator'
@@ -704,7 +731,7 @@ export default function Game() {
 // import { ITEMS } from '../data/entities/items'
 // import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 // import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
-// import '../data/quests' // side-effect: registers quest definitions
+// import '../data/quests'
 
 // function createNewGame() {
 //   const worlds = generateNetwork()
@@ -752,6 +779,22 @@ export default function Game() {
 //     inventory,
 //     flags: { ...player.flags, stick_transformed: true }
 //   }
+// }
+
+// function triggerClueG(setGame, setInteraction) {
+//   setGame(prev => ({
+//     ...prev,
+//     player: {
+//       ...prev.player,
+//       flags: { ...prev.player.flags, clue_g_done: true }
+//     }
+//   }))
+
+//   setInteraction({
+//     type: 'message',
+//     title: 'A Memory',
+//     text: "A vivid memory grips you, sudden and violent. You are in a large chamber, a great opening torn into the roof above. You recognise them at once — Arian. Rylaine. Yourself. Others gathered close, all standing around a weapon: a vast, fiery missile, humming with barely-contained power.\n\nAries bursts into the chamber, shouting for Arian to stop. It is you who moves first — you strike him down from behind before he can reach the bomb. Rylaine steps close. Something rises from within you, a shimmering field spreading outward, wrapping around yourself and, just barely, around her.\n\nThen the Firia bomb detonates."
+//   })
 // }
 
 // export default function Game() {
@@ -1031,11 +1074,17 @@ export default function Game() {
 //           view,
 //           onChoice: (choiceIdx) => {
 //             const result = chooseDialogueOption(tree, gamebookState, view.nodeId, choiceIdx)
+//             const justCompletedClueF = !gamebookState.flags.clue_f_done && result.state.flags.clue_f_done
 
 //             setGame(prev => ({
 //               ...prev,
 //               player: maybeTransformStick({ ...prev.player, ...result.state })
 //             }))
+
+//             if (justCompletedClueF) {
+//               triggerClueG(setGame, setInteraction)
+//               return
+//             }
 
 //             if (result.isEnd || !result.view) {
 //               setInteraction(null)
@@ -1198,6 +1247,7 @@ export default function Game() {
 //     return () => clearTimeout(timeout)
 //   }, [game])
 
+//   // CAMERA FOLLOW
 //   useEffect(() => {
 //     if (!gridRef.current || !game) return
 
