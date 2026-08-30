@@ -20,6 +20,7 @@ import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
 import '../data/quests' 
+import BackgroundMusic from '../components/BackgroundMusic'
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -596,6 +597,7 @@ export default function Game() {
 
   return (
     <div className='game-root'>
+      <BackgroundMusic />
       <div className='world-area'>
         <div
           ref={gridRef}

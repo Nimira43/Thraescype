@@ -10,8 +10,14 @@ export default function InteractionModal({ data, onClose }) {
     return (
       <div className='modal-overlay'>
         <div className='modal-box'>
-          {view.speaker && <div className='modal-speaker'>{view.speaker}</div>}
-          <p className='modal-text'>{view.text}</p>
+          {view.speaker && (
+            <div className='modal-speaker'>
+              {view.speaker}
+            </div>
+          )}
+          <p className='modal-text modal-text-scroll'>
+            {view.text}
+          </p>
           <div className='modal-choices'>
             {view.choices.map((choice) => (
               <button
@@ -23,7 +29,10 @@ export default function InteractionModal({ data, onClose }) {
               </button>
             ))}
             {view.isEnd && (
-              <button className='modal-btn' onClick={onClose}>
+              <button
+                className='modal-btn'
+                onClick={onClose}
+              >
                 Close
               </button>
             )}
@@ -39,11 +48,17 @@ export default function InteractionModal({ data, onClose }) {
         <div className='modal-box'>
           <Item item={data.item} />
           {data.overweight && (
-            <p className='modal-warning'>Too heavy to carry.</p>
+            <p className='modal-warning'>
+              Too heavy to carry.
+            </p>
           )}
           <div className='modal-choices'>
             {data.choices.map((choice, idx) => (
-              <button key={idx} className='modal-btn' onClick={choice.action}>
+              <button
+                key={idx}
+                className='modal-btn'
+                onClick={choice.action}
+              >
                 {choice.label}
               </button>
             ))}
@@ -57,10 +72,19 @@ export default function InteractionModal({ data, onClose }) {
     return (
       <div className='modal-overlay'>
         <div className='modal-box'>
-          {data.title && <div className='modal-speaker'>{data.title}</div>}
-          <p className='modal-text'>{data.text}</p>
+          {data.title && (
+            <div className='modal-speaker'>
+              {data.title}
+            </div>
+          )}
+          <p className='modal-text modal-text-scroll'>
+            {data.text}
+          </p>
           <div className='modal-choices'>
-            <button className='modal-btn' onClick={onClose}>
+            <button
+              className='modal-btn'
+              onClick={onClose}
+            >
               Close
             </button>
           </div>
@@ -84,7 +108,9 @@ export default function InteractionModal({ data, onClose }) {
           )}
 
           {data.combineMode && (
-            <p className='inventory-empty'>Select items to combine.</p>
+            <p className='inventory-empty'>
+              Select items to combine.
+            </p>
           )}
 
           <div className='modal-choices modal-choices-scroll'>
@@ -105,15 +131,24 @@ export default function InteractionModal({ data, onClose }) {
           <div className='modal-choices'>
             {data.combineMode ? (
               <>
-                <button className='modal-btn' onClick={data.onCombine}>
+                <button
+                  className='modal-btn'
+                  onClick={data.onCombine}
+                >
                   Combine Selected
                 </button>
-                <button className='modal-btn' onClick={data.onToggleCombineMode}>
+                <button
+                  className='modal-btn'
+                  onClick={data.onToggleCombineMode}
+                >
                   Cancel
                 </button>
               </>
             ) : (
-              <button className='modal-btn' onClick={data.onToggleCombineMode}>
+              <button
+                className='modal-btn'
+                onClick={data.onToggleCombineMode}
+              >
                 Combine Items
               </button>
             )}
@@ -129,4 +164,3 @@ export default function InteractionModal({ data, onClose }) {
 
   return null
 }
-
