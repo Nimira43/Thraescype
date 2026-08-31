@@ -10,11 +10,11 @@ export default function InteractionModal({ data, onClose }) {
     return (
       <div className='modal-overlay'>
         <div className='modal-box'>
-          {view.speaker && (
+          {view.speaker &&
             <div className='modal-speaker'>
               {view.speaker}
             </div>
-          )}
+          }
           <p className='modal-text modal-text-scroll'>
             {view.text}
           </p>
@@ -69,24 +69,29 @@ export default function InteractionModal({ data, onClose }) {
   }
 
   if (data.type === 'message') {
+    const choices = data.choices || [{ label: 'Close', action: onClose }]
+
     return (
       <div className='modal-overlay'>
         <div className='modal-box'>
-          {data.title && (
+          {data.title &&
             <div className='modal-speaker'>
               {data.title}
             </div>
-          )}
+          }
           <p className='modal-text modal-text-scroll'>
             {data.text}
           </p>
           <div className='modal-choices'>
-            <button
-              className='modal-btn'
-              onClick={onClose}
-            >
-              Close
-            </button>
+            {choices.map((choice, idx) => (
+              <button
+                key={idx}
+                className='modal-btn'
+                onClick={choice.action}
+              >
+                {choice.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -153,7 +158,10 @@ export default function InteractionModal({ data, onClose }) {
               </button>
             )}
 
-            <button className='modal-btn modal-btn-close' onClick={onClose}>
+            <button
+              className='modal-btn modal-btn-close'
+              onClick={onClose}
+            >
               Close
             </button>
           </div>

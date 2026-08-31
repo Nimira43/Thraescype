@@ -7,6 +7,9 @@ const TRACKS = [
   '/audio/track-4.mp3',
   '/audio/track-5.mp3',
   '/audio/track-6.mp3',
+  '/audio/track-7.mp3',
+  '/audio/track-8.wav',
+  '/audio/track-9.ogg',
 ]
 
 const VOLUME = 0.7
