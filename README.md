@@ -11,7 +11,7 @@ Each voice you meet carries a piece of the story:
 - **Raevanna**, the witch whispered to be older than empires.  
 - **Osric**, **Eanflaed**, **Cenric**, and others who speak of clouds, fractures, and things that still dream beneath the ruins.
 
-Through dialogue and discovery, you trace the echoes of a catastrophe — a weapon, a rebellion, a love letter carved into stone. The truth hides in relics and stories and quests completd, in the quiet between worlds.
+Through dialogue and discovery, you trace the echoes of a catastrophe — a weapon, a rebellion, a love letter carved into stone. The truth hides in relics and stories and quests, in the quiet between worlds.
 
 But *Þræscype* is not a story told to you.  
 It’s one you assemble — piece by piece, choice by choice — until the fragments begin to remember themselves.
