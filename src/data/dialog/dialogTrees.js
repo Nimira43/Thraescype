@@ -952,7 +952,7 @@ export const DIALOGUE_TREES = {
 
       final_confrontation_5: {
         speaker: 'Raevanna',
-        text: "[Þræscype raises his arm, the Verisible held tight in his grasp. Raevanna's eyes narrow.] You have a strange way of showing gratitude.",
+        text: "[You raise your arm, the Verisible held tight in your grasp. Raevanna's eyes narrow.] You have a strange way of showing gratitude.",
         choices: [
           {
             text: 'You have done well, Witch. I am whole. But there is still one more thing you can do for me.',
@@ -984,7 +984,7 @@ export const DIALOGUE_TREES = {
       },
 
       raevanna_death: {
-        text: "From the Verisible, a beam of golden light strikes Raevanna and envelops her whole.\n\nThe golden glow intensifies. Raevanna's flesh bubbles, then blackens. Her screams reverberate around the valley. As the golden glow turns to blinding white light, her screams stop.\n\nThe white light fades, leaving a charred, blackened figure standing there. Þræscype lowers the Verisible, watching. The black figure disintegrates before his eyes.\n\nHe turns and walks away.",
+        text: "From the Verisible, a beam of golden light strikes Raevanna and envelops her whole.\n\nThe golden glow intensifies. Raevanna's flesh bubbles, then blackens. Her screams reverberate around the valley. As the golden glow turns to blinding white light, her screams stop.\n\nThe white light fades, leaving a charred, blackened figure standing there. You lower the Verisible, watching. The black figure disintegrates before your eyes.\n\nYou turn and walk away.",
         choices: [{ text: 'Leave', next: 'end' }]
       },
 
@@ -1029,7 +1029,7 @@ export const DIALOGUE_TREES = {
       },
       watching_for: {
         speaker: 'The Cloud',
-        text: 'Arian. Or what remains of his Alchemists — any who had a hand in what was done here. I have watched every world since. I will know them, if they return.',
+        text: "Arian is dead — I saw it happen, though not by my hand. Rylaine evaded me that day; I don't know if she still lives. If she returns, or any other Alchemist, I will know them.",
         choices: [{ text: 'What will you do, when they do?', next: 'unanswered' }]
       },
       unanswered: {
@@ -1063,12 +1063,12 @@ export const DIALOGUE_TREES = {
       },
       clue_e_3: {
         speaker: 'The Cloud',
-        text: 'I am waiting. For Arian and Rylaine.',
-        choices: [{ text: 'What will you do if you see them again?', next: 'clue_e_4' }]
+        text: 'I am waiting. For Rylaine. Arian is dead — that much I know for certain. I saw it happen, though it was not by my hand.',
+        choices: [{ text: 'What will you do if you see her again?', next: 'clue_e_4' }]
       },
       clue_e_4: {
         speaker: 'The Cloud',
-        text: "I will strike them down with the power I've been harvesting these past many years.",
+        text: "I will strike her down with the power I've been harvesting these past many years.",
         choices: [{ text: 'Power?', next: 'clue_e_5' }]
       },
       clue_e_5: {
@@ -1089,12 +1089,12 @@ export const DIALOGUE_TREES = {
       clue_e_8: {
         speaker: 'The Cloud',
         text: 'Precisely.',
-        choices: [{ text: 'And so you wait for them? To finish them off.', next: 'clue_e_9' }]
+        choices: [{ text: 'And so you wait for her? To finish her off.', next: 'clue_e_9' }]
       },
       clue_e_9: {
         speaker: 'The Cloud',
-        text: 'If they emerge from the Void I will finish them.',
-        choices: [{ text: 'What if they are dead already? During the Apocalypse?', next: 'clue_e_10' }]
+        text: 'If she emerges from the Void, I will finish her.',
+        choices: [{ text: 'What if she is dead already? During the Apocalypse?', next: 'clue_e_10' }]
       },
       clue_e_10: {
         speaker: 'The Cloud',

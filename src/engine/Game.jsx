@@ -20,7 +20,7 @@ import { ITEMS } from '../data/entities/items'
 import { DIALOGUE_TREES } from '../data/dialog/dialogTrees'
 import { startDialogue, chooseDialogueOption, createGamebookState } from '../engine/gamebook'
 import '../data/quests' 
-import BackgroundMusic from '../components/BackgroundMusic'
+import BackgroundMusic  from '../components/BackgroundMusic'
 
 function createNewGame() {
   const worlds = generateNetwork()
@@ -92,6 +92,7 @@ export default function Game() {
   const [interaction, setInteraction] = useState(null)
   const [cloud, setCloud] = useState(() => createCloud(WORLD_COUNT, WORLD_WIDTH, WORLD_HEIGHT))
   const [boars, setBoars] = useState([])
+  const [storyEnded, setStoryEnded] = useState(false)
 
   const worldsRef = useRef(game.worlds)
   useEffect(() => {
@@ -231,6 +232,7 @@ export default function Game() {
     setInteraction({ type: 'message', text: recipe.narrative })
   }
 
+
   function showMessageSequence(messages, onComplete) {
     function showAt(index) {
       const isLast = index === messages.length - 1
@@ -253,7 +255,6 @@ export default function Game() {
         ]
       })
     }
-
     showAt(0)
   }
 
@@ -414,6 +415,61 @@ export default function Game() {
     showDialogue(view, state)
   }
 
+  function endStory() {
+    clearGame()
+    setInteraction(null)
+    setStoryEnded(true)
+  }
+
+  function handleFinalCloudEncounter() {
+    showMessageSequence(
+      [
+        { text: 'The Cloud: "I sense a great disturbance! She has returned!"' },
+        { text: 'You: "Who has?"' },
+        { text: 'The Cloud: "Fool! Did you not hear what I told you earlier? Rylaine!"' },
+        { text: "You: \"She's back? How remarkable.\"" },
+        { text: 'The Cloud: "Enough of your impudence. I need to find her."' },
+        { text: 'You: "I think you\'re going to have a long search, Aries."' },
+        { text: 'You raise the Verisible up high. From it, the golden glow shimmers brightly.' },
+        { text: 'The Cloud: "You are an Alchemist! How could I have missed this? This is their doing."' },
+        { text: "You: \"Arian was a fool. It was Rylaine's alchemy that has shrouded me.\"" },
+        { text: "The Cloud: \"Rylaine? The poisoner of Arian's mind. You are in league with them.\"" },
+        { text: 'You: "I was in the Observatory Chamber when you interfered with our plans."' },
+        { text: 'A bolt of energy comes from the Cloud, dazzling blue in colour. Sparkling blue energy swirls around you, then disappears. You are unharmed.' },
+        { text: "You: \"I take it that you are not pleased that I'm here?\"" },
+        { text: 'The Cloud: "That was nothing, Alchemist. Show me where Rylaine is. Do as I command!"' },
+        { text: 'You: "Command? You don\'t command me, Aries. However, do know this: Rylaine is dead."' },
+        { text: 'The Cloud: "Lies!"' },
+        { text: 'Another, stronger burst of energy strikes you. This time you stagger back, momentarily off balance.' },
+        { text: 'The Cloud: "You still stand. How? Who are you?"' },
+        { text: 'You: "I am Þræscype."' },
+        { text: "The Cloud: \"I do not know you. You are one of Rylaine's pups?\"" },
+        { text: 'You feel a tremor of anger within you.' },
+        { text: 'You: "Rylaine was my teacher. And my lover."' },
+        { text: 'This time a steady stream of electrical energy strikes you. You kneel to the floor. You try to summon the power from within the Verisible. Nothing happens.' },
+        { text: 'The Cloud: "Lies! You are nothing, Þræscype! Rylaine, though poisoner of his mind, loved Arian!"' },
+        { text: 'You: "You couldn\'t stand that, though? That she loved Arian?"' },
+        { text: 'The Cloud: "Where is she?!"' },
+        { text: 'You: "The thought that she loved Arian and not you?"' },
+        { text: 'The Cloud: "I will destroy you!"' },
+        { text: 'The ferocity of the lightning energy from the Cloud increases in force and intensity. All around you are blue flames. Yet now you are strangely calm. You lower the Verisible.' },
+        { text: 'You: "You loved Rylaine, I can see. And you loathed her because she loved Arian. Yet the truth is this, Aries: she loathed both Arian and yourself, and the Empire. She chose me to help her put an end to you all."' },
+        { text: 'The Cloud: "LIES!!!!!"' },
+        { text: 'You: "So here we are, you and I. What right now, Aries? You think your power is alchemical? You are a fool."' },
+        { text: 'The Cloud: "I AM THE HOLDER OF ALCHEMY NOW! YOU SEE MY POWER!"' },
+        { text: "Within the calmness, you feel the Cloud's power now being drawn into you.\n\nTo join with your own power, nurtured by Rylaine.\n\nTo join the power gifted to you from the Everlasting Flower — Rylaine's last sacrifice.\n\nTo join... the elemental powers... the powers of nature you absorbed when you destroyed Raevanna.\n\nPower joined and combined. Ready to be channeled.\n\nYou raise the Verisible." },
+        { text: 'Golden light bursts from it — but this time joined by green and blue light.\n\nAlchemical. Nature. The power of Air.' },
+        { text: 'The Cloud whispers, with the sound of thunder: "Stop this!"' },
+        { text: 'The Cloud is, at first, surrounded by the weave of lights. And then it is absorbed. It becomes a part of you.' },
+        { text: "Yet the weave of gold, green and blue lights does not stop there. It expands. You channel more power through the Verisible. Soon the world you stand in is consumed. Your power reaches out through the portals to the other worlds, consuming everything in its path, claiming more lives." },
+        { text: 'You sense when everything is absorbed. Only then does that one thought come to your mind: the Serren. You channel more and more power. Gold, green and blue merge to white.' },
+        { text: 'Then you sense nothing.' },
+        { text: 'White turns to black.' }
+      ],
+      () => endStory()
+    )
+  }
+
   function handleInteraction(entity, x, y, playerState) {
     if (!entity) return
 
@@ -502,7 +558,7 @@ export default function Game() {
 
     function handleKey(e) {
       if (e.repeat) return
-
+      if (storyEnded) return
       if (interaction?.type === 'dialogue') return
 
       setGame(prev => {
@@ -550,7 +606,11 @@ export default function Game() {
           cloud.worldId === currentWorldId &&
           getCloudCells(cloud).has(`${newX},${newY}`)
         ) {
-          handleCloudEncounter(player)
+          if (player.flags.thraescype_awakened && player.flags.raevanna_destroyed) {
+            handleFinalCloudEncounter()
+          } else {
+            handleCloudEncounter(player)
+          }
           return prev
         }
 
@@ -580,7 +640,7 @@ export default function Game() {
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [interaction, game, boars, cloud])
+  }, [interaction, game, boars, cloud, storyEnded])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -611,13 +671,14 @@ export default function Game() {
 
   useEffect(() => {
     if (!game) return
+    if (storyEnded) return
 
     const timeout = setTimeout(() => {
       saveGame(game)
     }, 300)
 
     return () => clearTimeout(timeout)
-  }, [game])
+  }, [game, storyEnded])
 
   useEffect(() => {
     if (!gridRef.current || !game) return
@@ -632,6 +693,19 @@ export default function Game() {
       behavior: 'smooth'
     })
   }, [game])
+
+  if (storyEnded) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: '#000',
+          zIndex: 9999
+        }}
+      />
+    )
+  }
 
   if (!game) return <div>Loading…</div>
 
@@ -699,7 +773,9 @@ export default function Game() {
       </div>
 
       <div className='side-panel'>
-        <div className='side-title'>Þræscype</div>
+        <div className='side-title'>
+          Þræscype
+        </div>
 
         <div className='info-block'>
           <div>

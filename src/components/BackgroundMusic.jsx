@@ -3,13 +3,13 @@ import { useEffect, useRef } from 'react'
 const TRACKS = [
   '/audio/track-1.mp3',
   '/audio/track-2.mp3',
-  '/audio/track-3.ogg',
-  '/audio/track-4.mp3',
+  '/audio/track-3.wav',
+  '/audio/track-4.ogg',
   '/audio/track-5.mp3',
   '/audio/track-6.mp3',
-  '/audio/track-7.mp3',
+  '/audio/track-7.ogg',
   '/audio/track-8.wav',
-  '/audio/track-9.ogg',
+  '/audio/track-9.mp3',
 ]
 
 const VOLUME = 0.7
