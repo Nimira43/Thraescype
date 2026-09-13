@@ -129,6 +129,21 @@ export const ITEMS = {
     description: 'A skin of clean water, drawn from a source that still runs true.'
   },
 
+  water_skin_empty: {
+    name: 'Empty Water Skin',
+    category: 'gear',
+    weight: 1,
+    description: "A worn leather skin, empty and light. Stand at any water's edge to fill it."
+  },
+
+  water_skin_full: {
+    name: 'Water Skin (Full)',
+    category: 'food',
+    weight: 2,
+    restore: { stamina: 10 },
+    description: "A leather skin, heavy with clean water. Drink it, and it'll need filling again before it's any more use."
+  },
+
   herbs: {
     name: 'Herbs',
     category: 'food',

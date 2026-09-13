@@ -2,7 +2,6 @@ export const DIALOGUE_TREES = {
   eadric_heirlooms: {
     id: 'eadric_heirlooms',
     startNode: 'greeting',
-
     entryPoints: [
       {
         condition: { type: 'questActive', questId: 'eadric_heirlooms' },
@@ -167,7 +166,6 @@ export const DIALOGUE_TREES = {
   cenric_the_wary: {
     id: 'cenric_the_wary',
     startNode: 'greeting',
-
     entryPoints: [
       {
         condition: {
@@ -678,7 +676,6 @@ export const DIALOGUE_TREES = {
   raevanna_witch: {
     id: 'raevanna_witch',
     startNode: 'brush_off',
-
     entryPoints: [
       {
         condition: {
@@ -784,6 +781,16 @@ export const DIALOGUE_TREES = {
             condition: { type: 'hasItem', itemId: 'water' },
             effects: [
               { type: 'removeItem', itemId: 'water' },
+              { type: 'setFlag', key: 'raevanna_water_given' }
+            ]
+          },
+          {
+            text: 'Water, clean enough — from my skin.',
+            next: 'checking_tasks',
+            condition: { type: 'hasItem', itemId: 'water_skin_full' },
+            effects: [
+              { type: 'removeItem', itemId: 'water_skin_full' },
+              { type: 'giveItem', itemId: 'water_skin_empty' },
               { type: 'setFlag', key: 'raevanna_water_given' }
             ]
           },

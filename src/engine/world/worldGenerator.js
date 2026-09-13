@@ -5,10 +5,10 @@ export const HEIGHT = 40
 const PLAINS = 'plains'
 
 const TERRAIN_ITEM_TABLE = {
-  forest: { chance: 0.02, items: ['wood', 'wild_berries', 'herbs'] },
-  water: { chance: 0.02, items: ['water'] },
-  hill: { chance: 0.008, items: ['potato', 'sharp_metal_shard'] },
-  plains: { chance: 0.006, items: ['wild_berries'] }
+  forest: { chance: 0.02, items: ['wood', 'wild_berries', 'herbs', 'twine'] },
+  water:  { chance: 0.02, items: ['water'] },
+  hill:   { chance: 0.008, items: ['potato', 'sharp_metal_shard'] },
+  plains: { chance: 0.006, items: ['wild_berries', 'cloth'] }
 }
 
 function createGrid(fn) {
