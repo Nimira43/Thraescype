@@ -449,7 +449,7 @@ export default function Game() {
       [
         { text: 'The Cloud: "I sense a great disturbance! She has returned!"' },
         { text: 'You: "Who has?"' },
-        { text: 'The Cloud: "Fool! Did you not hear what I said earlier? It is Rylaine!"' },
+        { text: 'The Cloud: "Fool! Did you not hear what I told your earlier? This is Rylaine!"' },
         { text: "You: \"She's back? How remarkable.\"" },
         { text: 'The Cloud: "Enough of your impudence. I need to find her."' },
         { text: 'You: "I think you\'ll find that\'s going to be a bit difficult Aries."' },

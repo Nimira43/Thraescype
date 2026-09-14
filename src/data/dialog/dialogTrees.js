@@ -494,7 +494,7 @@ export const DIALOGUE_TREES = {
       },
 
       vellum_translation: {
-        text: "You hold the vellum up against the stele. The writing seems to shift, aligning with the carved marks beneath it — and then, impossibly, it translates before your eyes.\n\n'My love, if you read this then our plans have failed and I have perished. The Casting went wrong and Elveria was destroyed and fractured.\n\nArian, the arrogant fool, is slain by my hand. His bones, now rotted away, lie buried beneath your feet where you stand.\n\nSeek out the Everlasting Flower. This marks where I now rest, in the hills.\n\nMy love, it is down to you. Seek Raevanna and give her this parchment and the Everlasting Flower. She will tell you what to do with the Verisible.\n\nI grow weaker, Þræscype. Not long now.\n\nRylaine.'",
+        text: "You hold the vellum up against the stele. The writing seems to shift, aligning with the carved marks beneath it — and then, impossibly, it translates before your eyes.\n\n'My love, if you read this then our plans have failed and I have perished. The Casting went wrong and Elveria was destroyed and fractured.\n\nArian, the arrogant fool, is slain by my hand. His bones, now rotted away, lie buried beneath your feet where you stand.\n\nSeek out the Everlasting Flower. This marks where I now rest, in the hills.\n\nMy love, it is down to you. Seek Raevanna and give her this parchment and the Everlasting Flower. The engraved metal you have in your possession is called the Verisible. Raevanna will tell you more about what the Verisible is.\n\nI grow weaker, Þræscype. Not long now.\n\nRylaine.'",
         choices: [
           {
             text: 'Þræscype...',
@@ -580,7 +580,16 @@ export const DIALOGUE_TREES = {
     id: 'oswald_mad',
     startNode: 'greeting',
     entryPoints: [
-      { condition: { type: 'flag', key: 'clue_c_found' }, node: 'vindicated' },
+      {
+        condition: {
+          type: 'and',
+          conditions: [
+            { type: 'flag', key: 'clue_c_found' },
+            { type: 'questActive', questId: 'clue_c_plant' }
+          ]
+        },
+        node: 'vindicated'
+      },
       { condition: { type: 'questActive', questId: 'clue_c_plant' }, node: 'reminder' }
     ],
     nodes: {
@@ -854,7 +863,7 @@ export const DIALOGUE_TREES = {
 
       void_emergence: {
         speaker: 'Raevanna',
-        text: "Many years ago, Rylaine and Arian came forth from the Void, just as you did. Though tired and confused, their wits were very much intact. Rylaine was angered that you hadn't emerged from the Void as well. She confronted Arian with the truth — that she loved you, and that she despised him. She told him that both of you had planned to rid Elveria of the Empire, and planned to rule together. She killed Arian, but was badly injured. The Cloud — Aries — was drawn to the battle, and attacked Rylaine with a burst of lightning. She managed to evade him, and sought sanctuary within my valley.",
+        text: "Many years ago, Rylaine and Arian came forth from the Void, just as you did. Though tired and confused, their wits were very much intact. Rylaine was angered that you hadn't emerged from the Void as well. She confronted Arian with the truth — that she loved you, and that she despised him. She told him that both of you had planned to rid Elveria of the Empire, and planned to rule together. She killed Arian, but was badly injured. The Cloud was drawn to the battle and found Arian dead. Rylaine managed to evade him, and sought sanctuary within my valley.",
         choices: [{ text: 'Am I Þræscype?', next: 'confirm_identity' }]
       },
 
@@ -866,7 +875,7 @@ export const DIALOGUE_TREES = {
 
       rylaine_fate: {
         speaker: 'Raevanna',
-        text: 'She was worried that were you to come from the Void, then the Cloud would attack you. She was badly injured, and spent her remaining days laying down clues throughout the Fractured Worlds — clues to help you fight against Aries. He has, ironically, grown strong now in the ways of Alchemy.',
+        text: 'She was worried that were you to come from the Void, then the Cloud would attack you. She was dying, and spent her remaining days laying down clues throughout the Fractured Worlds — clues to help you rediscover yourself if need be and to fight against Aries. He has, ironically, grown strong now in the ways of Alchemy.',
         choices: [{ text: "I have spoken to Aries. He doesn't know me.", next: 'shield_explained' }]
       },
 
@@ -939,7 +948,7 @@ export const DIALOGUE_TREES = {
         text: "Then Rylaine's sacrifice was not in vain.",
         choices: [
           {
-            text: 'So, Witch, you gave aid to Rylaine — to help her protect me for when I returned?',
+            text: 'So, Witch, am I grateful to you for all the help you to Rylaine.',
             next: 'final_confrontation_3'
           }
         ]
@@ -954,12 +963,12 @@ export const DIALOGUE_TREES = {
       final_confrontation_4: {
         speaker: 'Raevanna',
         text: 'My name is Raevanna, and you shall address me as so.',
-        choices: [{ text: 'I am grateful.', next: 'final_confrontation_5' }]
+        choices: [{ text: 'Thank you Witch.', next: 'final_confrontation_5' }]
       },
 
       final_confrontation_5: {
         speaker: 'Raevanna',
-        text: "[You raise your arm, the Verisible held tight in your grasp. Raevanna's eyes narrow.] You have a strange way of showing gratitude.",
+        text: "You raise your arm, the Verisible held tight in your grasp. Raevanna's eyes narrow.\n\n \"You have a strange way of showing gratitude.\"",
         choices: [
           {
             text: 'You have done well, Witch. I am whole. But there is still one more thing you can do for me.',
@@ -970,7 +979,7 @@ export const DIALOGUE_TREES = {
 
       final_confrontation_6: {
         speaker: 'Raevanna',
-        text: 'Never! Let me go and then begone! Leave my valley!',
+        text: "I've helped you enough. Leave my valley.",
         choices: [
           {
             text: "I need to test the powers that I have. I wouldn't want to face Aries without knowing for sure how strong I've become.",
@@ -1009,6 +1018,7 @@ export const DIALOGUE_TREES = {
           type: 'and',
           conditions: [
             { type: 'flag', key: 'heard_thraescype' },
+            { type: 'flag', key: 'cloud_first_encounter_done' },
             { type: 'not', condition: { type: 'flag', key: 'clue_e_done' } }
           ]
         },
@@ -1032,12 +1042,12 @@ export const DIALOGUE_TREES = {
       knows_raevanna: {
         speaker: 'The Cloud',
         text: 'Raevanna. Yes — I know her. She was there, same as I. Then you know what I am, if she named me true.',
-        choices: [{ text: 'What are you watching for?', next: 'watching_for' }]
+        choices: [{ text: 'What is it that you are watching out for?', next: 'watching_for' }]
       },
       watching_for: {
         speaker: 'The Cloud',
-        text: "Arian is dead — I saw it happen, though not by my hand. Rylaine evaded me that day; I don't know if she still lives. If she returns, or any other Alchemist, I will know them.",
-        choices: [{ text: 'What will you do, when they do?', next: 'unanswered' }]
+        text: "Any surviving Alchemists. There is one in particular - Rylaine. If she returns or any of the other Alchemists, I will know.",
+        choices: [{ text: 'What will you do when you find them?', next: 'unanswered' }]
       },
       unanswered: {
         speaker: 'The Cloud',
@@ -1058,7 +1068,7 @@ export const DIALOGUE_TREES = {
 
       clue_e_1: {
         speaker: 'The Cloud',
-        text: 'I sense something in you, but I do not know you. You are not an Alchemist — this is for sure. I would know this. But. Who are you?',
+        text: 'I sense something in you, but I do not know you. You are not an Alchemist — this is for sure. I would know this. Who are you?',
         choices: [
           { text: 'I am searching for those answers, Aries. You were against the Alchemists, were you not?', next: 'clue_e_2' }
         ]
@@ -1070,12 +1080,12 @@ export const DIALOGUE_TREES = {
       },
       clue_e_3: {
         speaker: 'The Cloud',
-        text: 'I am waiting. For Rylaine. Arian is dead — that much I know for certain. I saw it happen, though it was not by my hand.',
+        text: 'I am waiting. For Rylaine. Arian did emerge from the Void a long time ago. He was slain in strange circumstances — that much I know for certain.',
         choices: [{ text: 'What will you do if you see her again?', next: 'clue_e_4' }]
       },
       clue_e_4: {
         speaker: 'The Cloud',
-        text: "I will strike her down with the power I've been harvesting these past many years.",
+        text: "I will strike her down and any other Alchemist I encounter who caused the destruction of Elveria. With the power I've been harvesting these past many years.",
         choices: [{ text: 'Power?', next: 'clue_e_5' }]
       },
       clue_e_5: {
@@ -1095,13 +1105,13 @@ export const DIALOGUE_TREES = {
       },
       clue_e_8: {
         speaker: 'The Cloud',
-        text: 'Precisely.',
-        choices: [{ text: 'And so you wait for her? To finish her off.', next: 'clue_e_9' }]
+        text: 'Exactly.',
+        choices: [{ text: 'And so you wait for her?', next: 'clue_e_9' }]
       },
       clue_e_9: {
         speaker: 'The Cloud',
-        text: 'If she emerges from the Void, I will finish her.',
-        choices: [{ text: 'What if she is dead already? During the Apocalypse?', next: 'clue_e_10' }]
+        text: 'For her and the rest of her Alchemist kin.',
+        choices: [{ text: 'What if she is dead already? And the other Alchemists? During the Apocalypse?', next: 'clue_e_10' }]
       },
       clue_e_10: {
         speaker: 'The Cloud',
