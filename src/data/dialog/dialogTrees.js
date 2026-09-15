@@ -857,7 +857,7 @@ export const DIALOGUE_TREES = {
 
       reads_vellum: {
         speaker: 'Raevanna',
-        text: '[She takes the vellum and reads it. Her breath catches — shock, and something like wonder.] Amazing. I... I never thought this day would come. Þræscype?',
+        text: '[She takes the vellum and reads it. Her breath catches — shock, and something like wonder...]\n\n Amazing. I... I never thought this day would come. Þræscype?',
         choices: [{ text: 'I keep hearing that name. What has this got to do with me?', next: 'void_emergence' }]
       },
 
@@ -890,7 +890,7 @@ export const DIALOGUE_TREES = {
         text: 'Evidently so — though I fear Aries will find out the truth soon.',
         choices: [
           {
-            text: 'This is the Everlasting Flower that Rylaine mentioned. And this — is this the Verisible she spoke of?',
+            text: '[You hold out the Everlasting Flower and the piece of metal for Raevanna to see...]\n\n This is the Everlasting Flower that Rylaine mentioned. And this — is this the Verisible she spoke of? ',
             next: 'plant_presented'
           }
         ]
@@ -948,7 +948,7 @@ export const DIALOGUE_TREES = {
         text: "Then Rylaine's sacrifice was not in vain.",
         choices: [
           {
-            text: 'So, Witch, am I grateful to you for all the help you to Rylaine.',
+            text: 'So, Witch, am I grateful to you for all the help you gave to Rylaine.',
             next: 'final_confrontation_3'
           }
         ]
@@ -968,7 +968,7 @@ export const DIALOGUE_TREES = {
 
       final_confrontation_5: {
         speaker: 'Raevanna',
-        text: "You raise your arm, the Verisible held tight in your grasp. Raevanna's eyes narrow.\n\n \"You have a strange way of showing gratitude.\"",
+        text: "[You raise your arm, the Verisible held tight in your grasp. Raevanna's eyes narrow...]\n\n You have a strange way of showing gratitude.",
         choices: [
           {
             text: 'You have done well, Witch. I am whole. But there is still one more thing you can do for me.',
@@ -979,7 +979,7 @@ export const DIALOGUE_TREES = {
 
       final_confrontation_6: {
         speaker: 'Raevanna',
-        text: "I've helped you enough. Leave my valley.",
+        text: "Never! Leave me be and then begone! Leave my valley!",
         choices: [
           {
             text: "I need to test the powers that I have. I wouldn't want to face Aries without knowing for sure how strong I've become.",
